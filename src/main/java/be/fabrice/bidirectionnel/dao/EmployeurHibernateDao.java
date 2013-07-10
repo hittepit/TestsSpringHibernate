@@ -10,7 +10,10 @@ import be.fabrice.bidirectionnel.entities.Employeur;
 @Transactional(readOnly=true)
 public class EmployeurHibernateDao extends HibernateDaoSupport implements
 		EmployeurDao {
-
+	
+	public Employeur find(Integer id){
+		return (Employeur)getSession().get(Employeur.class,id);
+	}
 	@Transactional(readOnly=false)
 	public void save(Employeur employeur) {
 		getSession().saveOrUpdate(employeur);

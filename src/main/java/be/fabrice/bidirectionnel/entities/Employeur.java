@@ -25,7 +25,7 @@ public class Employeur {
 	private String name;
 	
 	@OneToMany(mappedBy="employeur")
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE_ORPHAN})
 	private List<Travailleur> travailleurs;
 
 	public Integer getId() {
@@ -52,5 +52,37 @@ public class Employeur {
 		}
 		travailleurs.add(travailleur);
 		travailleur.setEmployeur(this);
+	}
+	public void removeTravailleur(Travailleur travailleur){
+		if(this.travailleurs != null){
+			this.travailleurs.remove(travailleur);
+			travailleur.setEmployeur(null);
+		}
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+	/**
+	 * Dans le cadre du test, l'égalité est définie sur base du nom (ce n'est évidemment pas correct dans le monde réel).
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employeur other = (Employeur) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

@@ -10,10 +10,18 @@ import be.fabrice.bidirectionnel.entities.Travailleur;
 @Transactional(readOnly=true)
 public class TravailleurHibernateDao extends HibernateDaoSupport implements
 		TravailleurDao {
-
+	
+	public Travailleur find(Integer id){
+		return (Travailleur) getSession().get(Travailleur.class, id);
+	}
+	
 	@Transactional(readOnly=false)
 	public void save(Travailleur travailleur) {
 		getSession().saveOrUpdate(travailleur);
+	}
+
+	public void delete(Travailleur travailleur) {
+		getSession().delete(travailleur);
 	}
 
 }
