@@ -9,23 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 import be.fabrice.simple.entity.Person;
 
 @Repository
-@Transactional(readOnly=true)
-public class PersonHibernateDao extends HibernateDaoSupport implements
-		PersonDao {
+@Transactional(readOnly = true)
+public class PersonHibernateDao extends HibernateDaoSupport implements PersonDao {
 
 	public Person find(Integer id) {
 		return (Person) getSession().get(Person.class, id);
 	}
 
-	public List<Person> findByName(String lastname) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Person> findByLastname(String lastname) {
+		return getSession().createQuery("from Person p where p.lastname = :l")
+			.setString("l", lastname).list();
 	}
 
-	@Transactional(readOnly=false)
+	@Transactional(readOnly = false)
 	public void save(Person person) {
-		// TODO Auto-generated method stub
-
+		getSession().saveOrUpdate(person);
 	}
 
 }

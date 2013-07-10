@@ -6,6 +6,6 @@ import be.fabrice.simple.entity.Person;
 
 public interface PersonDao {
 	Person find(Integer id);
-	List<Person> findByName(String lastname);
+	List<Person> findByLastname(String lastname);
 	void save(Person person);
 }

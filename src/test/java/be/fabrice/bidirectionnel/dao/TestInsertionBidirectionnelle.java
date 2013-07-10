@@ -293,7 +293,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void testIncoherentSuppressionWillThrowException() throws Exception{
+	public void testIncoherentSuppressionWillThrowException() {
 		executeSqlScript("bidirectionnel/test-script.sql", false);
 		
 		Employeur e = employeurDao.find(1000);
