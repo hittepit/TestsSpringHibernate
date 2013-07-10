@@ -1,4 +1,4 @@
-package be.fabrice.entities.bidirectionnel;
+package be.fabrice.bidirectionnel.entities;
 
 import java.util.ArrayList;
 import java.util.List;

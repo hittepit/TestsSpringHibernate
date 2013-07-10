@@ -1,4 +1,4 @@
-package be.fabrice.entities.bidirectionnel;
+package be.fabrice.bidirectionnel.dao;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -14,6 +14,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.Test;
+
+import be.fabrice.bidirectionnel.dao.EmployeurDao;
+import be.fabrice.bidirectionnel.dao.TravailleurDao;
+import be.fabrice.bidirectionnel.entities.Employeur;
+import be.fabrice.bidirectionnel.entities.Travailleur;
 
 @ContextConfiguration(locations="classpath:test-bidirectionnel-spring.xml")
 public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSpringContextTests{
