@@ -34,6 +34,14 @@ import be.fabrice.bidirectionnel.entities.Travailleur;
  */
 @ContextConfiguration(locations="classpath:bidirectionnel/test-bidirectionnel-spring.xml")
 public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSpringContextTests{
+	/**
+	 * <p>Petite classe utilitaire pour contenir les données reçues en JDBC pour un employeur.</p>
+	 * <p>L'entité {@link Employeur} aurait pu être utilisée dans ce cas-ci, mais ce n'est pas propre.
+	 * De plus, l'entité {@link Employeur} contient une liste de {@link Travailleur}. Dans ce cas simple
+	 * d'utilisation, cette liste ne serait utilisée.</p>
+	 * @author fabrice.claes
+	 *
+	 */
 	private class EmployeurSimple{
 		private Integer id;
 		private String name;
@@ -51,6 +59,13 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 		}
 	}
 	
+	/**
+	 * <p>Petite classe utilitaire pour contenur les données JDBC d'un travailleur.</p>
+	 * <p>Cette classe est préférée à l'entité car cette dernière contient un lien vers un {@link Employeur}
+	 * alors que le JDBC renvoie juste la foreign key. Restons simple.</p>
+	 * @author fabrice.claes
+	 *
+	 */
 	private class TravailleurSimple{
 		private Integer id;
 		private String name;
@@ -75,6 +90,12 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 		}
 	}
 	
+	/**
+	 * RowMapper pour mapper (bien la lapalissade...) les données d'un ResultSet vers un {@link EmployeurSimple}.
+	 * Utilisé dans les tests.
+	 * @author fabrice.claes
+	 *
+	 */
 	private class EmployeurRowMapper implements RowMapper<EmployeurSimple>{
 	   	 public EmployeurSimple mapRow(ResultSet rs, int rowNum) throws SQLException {
 	   		 EmployeurSimple e= new EmployeurSimple();
@@ -84,6 +105,12 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	   	 }
     }
 	
+	/**
+	 * RowMapper pour mapper les données d'un ResultSet vers un {@link TravailleurSimple}.
+	 * Utilisé dans les tests.
+	 * @author fabrice.claes
+	 *
+	 */
 	private class TravailleurRowMapper implements RowMapper<TravailleurSimple>{
 	   	 public TravailleurSimple mapRow(ResultSet rs, int rowNum) throws SQLException {
 	   		 TravailleurSimple t= new TravailleurSimple();
