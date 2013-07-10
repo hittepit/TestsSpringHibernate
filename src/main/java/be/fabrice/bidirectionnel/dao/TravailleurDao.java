@@ -1,7 +1,7 @@
 package be.fabrice.bidirectionnel.dao;
 
-import be.fabrice.bidirectionnel.entities.Employeur;
-import be.fabrice.bidirectionnel.entities.Travailleur;
+import be.fabrice.bidirectionnel.entity.Employeur;
+import be.fabrice.bidirectionnel.entity.Travailleur;
 
 public interface TravailleurDao {
 	Travailleur find(Integer id);

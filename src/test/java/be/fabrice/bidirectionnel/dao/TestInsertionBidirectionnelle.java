@@ -19,8 +19,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
-import be.fabrice.bidirectionnel.entities.Employeur;
-import be.fabrice.bidirectionnel.entities.Travailleur;
+import be.fabrice.bidirectionnel.entity.Employeur;
+import be.fabrice.bidirectionnel.entity.Travailleur;
 
 /**
  * L'objectif de ce test est de démontrer le fonctionnement d'une relation bidirectionnelle et en particulier

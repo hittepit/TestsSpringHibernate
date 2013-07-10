@@ -4,7 +4,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import be.fabrice.bidirectionnel.entities.Employeur;
+import be.fabrice.bidirectionnel.entity.Employeur;
 
 @Repository
 @Transactional(readOnly=true)
