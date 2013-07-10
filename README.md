@@ -3,10 +3,10 @@ Petit projet utile à des fins de démonstration.
 * Démonstration de tests unitaires de Dao (avec TestNg et Spring)
 
 * Démonstration de certaines fonctionnalités d'Hibernate
-** Cohérence du modèle en bidirectionnalité
+	+ Cohérence du modèle en bidirectionnalité
 
 * TODO
-** Ajouter les commentaires sur les tests bidirectionnels
-** Simple test de dao
-** Simple test de service (mocking)
-** Démonstration de l'égalité avec getClass et instanceOf et proxy
+	+ Ajouter les commentaires sur les tests bidirectionnels
+	+ Simple test de dao
+	+ Simple test de service (mocking)
+	+ Démonstration de l'égalité avec getClass et instanceOf et proxy

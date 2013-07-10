@@ -14,8 +14,7 @@ public class PersonHibernateDao extends HibernateDaoSupport implements
 		PersonDao {
 
 	public Person find(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		return (Person) getSession().get(Person.class, id);
 	}
 
 	public List<Person> findByName(String lastname) {
