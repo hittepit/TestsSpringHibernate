@@ -6,7 +6,11 @@ Petit projet utile à des fins de démonstration.
 
 * Démonstration de certaines fonctionnalités d'Hibernate
 	+ Cohérence du modèle en bidirectionnalité
+	
+* Démonstration de particularité des proxies
+	+ Problème du equals
 
 * TODO
 	+ Ajouter les commentaires sur les tests bidirectionnels
-	+ Démonstration de l'égalité avec getClass et instanceOf et proxy
+	+ Différence entre le load et le get (proxy)
+	+ Récupération d'un proxy lorsque la session contient un proxy.

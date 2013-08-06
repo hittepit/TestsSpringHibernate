@@ -57,6 +57,12 @@ public class Travailleur {
 	public void setEmployeurCorrect(EmployeurCorrect employeurCorrect) {
 		this.employeurCorrect = employeurCorrect;
 	}
+	public EmployeurPresqueCorrect getEmployeurPresqueCorrect() {
+		return employeurPresqueCorrect;
+	}
+	public void setEmployeurPresqueCorrect(EmployeurPresqueCorrect employeurPresqueCorrect) {
+		this.employeurPresqueCorrect = employeurPresqueCorrect;
+	}
 	
 	@Override
 	public int hashCode() {
