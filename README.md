@@ -9,8 +9,9 @@ Petit projet utile à des fins de démonstration.
 	
 * Démonstration de particularité des proxies
 	+ Problème du equals
+	+ Initialisation des proxies
+	+ Différences entre session.get et session.load
+	+ Pour le fun, récupération de l'entité réelle derrière le proxy
 
 * TODO
 	+ Ajouter les commentaires sur les tests bidirectionnels
-	+ Différence entre le load et le get (proxy)
-	+ Récupération d'un proxy lorsque la session contient un proxy.

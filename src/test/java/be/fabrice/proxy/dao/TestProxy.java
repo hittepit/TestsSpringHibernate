@@ -1,8 +1,13 @@
 package be.fabrice.proxy.dao;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
 
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
@@ -15,8 +20,11 @@ import be.fabrice.proxy.entity.EmployeurPresqueCorrect;
 import be.fabrice.proxy.entity.Travailleur;
 
 /**
- * Le but de ce test est de montrer certains pièges dans l'écriture de la méthode equals
- * lors de l'utilisation de proxies (lazy loading de relations ManyToOne).<br />
+ * <p>Le but de ce test est de montrer certains aspects de l'utilisation de proxies par Hibernate,
+ * soit parce que la propriété est lazy-loadée, soit parce que load est utilisé.</p>
+ * Plusieurs aspects sont examinés:
+ * <ul>
+ * <li>pièges dans l'écriture de la méthode equals avec des proxies</li>
  * Pour les besoins ce test, plusieurs classes sont définies (sans signification business malgré les
  * apparences):
  * <ul>
@@ -30,13 +38,19 @@ import be.fabrice.proxy.entity.Travailleur;
  * via les getters.</li>
  * </ul>
  * Dans tous les cas, des employeurs sont considérés comme égaux s'ils sont de la même classe et si leur nom est le même.
+ * <li>initialisation des proxies;</li>
+ * <li>différences entre session.get et session.load.</li>
+ * </ul>
+ * <p>Attention que le comportement des proxies peut être affecté par la librairie utilisée pour le proxying. Ici, c'est javassist qui est
+ * utilisé (par défaut dans cette version d'Hibernate).</p>
+ * <p>Attention aussi qu'en debug, l'accès à certains éléments d'un proxy peut l'initialiser.</p>
  * @author fabrice.claes
  *
  */
 @ContextConfiguration(locations="classpath:proxy/test-proxy-spring.xml")
 public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	@Autowired
-	private TravailleurDao travailleurDao;
+	private Dao dao;
 	
 	@BeforeMethod
 	public void beforeTest(){
@@ -53,7 +67,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1000);
 		employeurNotManaged.setName("Anybody");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		
 		assertNotEquals(t.getEmployeur(), employeurNotManaged);
 		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
@@ -70,7 +84,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1000);
 		employeurNotManaged.setName("Anybody");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		
 		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeur().getId(), employeurNotManaged.getId());
@@ -88,7 +102,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1001);
 		employeurNotManaged.setName("Anybody else");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		
 		assertNotEquals(t.getEmployeurPresqueCorrect(), employeurNotManaged);
 		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
@@ -105,7 +119,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1001);
 		employeurNotManaged.setName("Anybody else");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		
 		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeurPresqueCorrect().getId(), employeurNotManaged.getId());
@@ -122,7 +136,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1002);
 		employeurNotManaged.setName("Another Anybody else");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		
 		assertEquals(t.getEmployeurCorrect(), employeurNotManaged);
 		assertEquals(t.getEmployeurCorrect().getName(), employeurNotManaged.getName());
@@ -139,9 +153,91 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1002);
 		employeurNotManaged.setName("Another Anybody else");
 		
-		Travailleur t = travailleurDao.find(1001);
+		Travailleur t = dao.findTravailleur(1001);
 		assertEquals(t.getEmployeurCorrect().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeurCorrect().getId(), employeurNotManaged.getId());
 		assertEquals(t.getEmployeurCorrect(), employeurNotManaged);
+	}
+	
+	/**
+	 * Le proxy est initialisé lorsqu'on accède à un getter de propriété
+	 */
+	@Test
+	public void testProxyIntializedIfPropertyAccessedThroughGetter(){
+		Travailleur t = dao.findTravailleur(1001);
+		
+		assertFalse(Hibernate.isInitialized(t.getEmployeur()), "Proxy non initialisé");
+		t.getEmployeur().getName();
+		assertTrue(Hibernate.isInitialized(t.getEmployeur()), "Proxy initialisé");
+	}
+
+	/**
+	 * Alors que la seule propriété connue du proxy est l'id de l'entité (nécessaire pour qu'il
+	 * puisse la charger), la passage par le getter de l'id (getId) initialise le proxy.
+	 */
+	@Test
+	public void testProxyIntializedIfIdAccessedThroughGetter(){
+		Travailleur t = dao.findTravailleur(1001);
+		
+		assertFalse(Hibernate.isInitialized(t.getEmployeur()), "Proxy non initialisé");
+		t.getEmployeur().getId();
+		assertTrue(Hibernate.isInitialized(t.getEmployeur()), "Proxy initialisé");
+	}
+	
+	/**
+	 * Ce test montre que si un proxy est déjà chargé en session, c'est un proxy qui sera renvoyé par
+	 * la méthode session.get. Voir aussi le comportement de session.get dans testGetDoesNotLoadAProxy.
+	 */
+	@Test
+	public void testProxyIsReturnedIfAlreadyLoadedInSession(){
+		Travailleur t = dao.findTravailleur(1001);
+		Employeur e = dao.findEmployeur(1000);
+		
+		assertFalse(e.getClass().equals(Employeur.class),"C'est un proxy, parce que déjà chargé");
+		assertSame(e, t.getEmployeur(),"En fait...");
+	}
+	
+	/**
+	 * L'utilisation de la méthode session.get ne renvoie pas de proxy (sauf si un proxy a déjà été chargé en
+	 * session, voir testProxyIsReturnedIfAlreadyLoadedInSession)
+	 */
+	@Test 
+	public void testGetDoesNotLoadAProxy(){
+		Employeur e1 = dao.findEmployeur(1000);
+		assertEquals(e1.getClass(),Employeur.class,"Ce n'est pas un proxy");
+	}
+	
+	/**
+	 * La méthode session.load renvoie un proxy si l'entité n'a pas encore été chargée en session. Voir aussi
+	 * testLoadLoadsTheEntityIfAlreadyLoaded
+	 */
+	@Test
+	public void testLoadLoadsAProxyIfNotYetLoaded(){
+		Employeur e = dao.loadEmployeur(1000);
+		assertFalse(Hibernate.isInitialized(e));
+	}
+	
+	/**
+	 * Si l'entité a déjà été chargée en session, session.load renvoie l'entité.
+	 */
+	@Test
+	public void testLoadLoadsTheEntityIfAlreadyLoaded(){
+		Employeur e1 = dao.findEmployeur(1000);
+		Employeur e2 = dao.loadEmployeur(1000);
+		assertEquals(e2.getClass(),Employeur.class,"Ce n'est pas un proxy");
+		assertSame(e1,e2);
+	}
+	
+	/**
+	 * Montre qu'il est possible de récupérer l'entité cachée derrière un proxy. En général, ce n'est pas utile,
+	 * donc ne devrait jamais être utilisé.
+	 */
+	@Test
+	public void testItIsPossibleToGetTheEntity(){
+		Employeur e = dao.loadEmployeur(1000);
+		assertFalse(Hibernate.isInitialized(e));
+		assertTrue(e instanceof HibernateProxy);
+		Employeur entity = (Employeur)((HibernateProxy)e).getHibernateLazyInitializer().getImplementation();
+		assertEquals(entity.getClass(),Employeur.class);
 	}
 }
