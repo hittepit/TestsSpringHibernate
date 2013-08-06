@@ -1,6 +1,5 @@
 package be.fabrice.bidirectionnel.dao;
 
-import be.fabrice.bidirectionnel.entity.Employeur;
 import be.fabrice.bidirectionnel.entity.Travailleur;
 
 public interface TravailleurDao {
