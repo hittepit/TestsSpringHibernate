@@ -11,9 +11,12 @@ Petit projet utile à des fins de démonstration.
 		- Initialisation des proxies
 		- Différences entre session.get et session.load
 		- Pour le fun, récupération de l'entité réelle derrière le proxy
+	+ Démontsration de l'héritage en une seule table
+		- Single table
 
 * TODO
 	+ proxies: hashcode (utilisation des getters)
-	+ en cours: héritage
+	+ TODO: héritage, les autres stratégies
 	+ Ajouter les commentaires sur les tests bidirectionnels
 	+ utilisation de usertypes
+	+ testing avec H2 lorsqu'un schéma est défini
