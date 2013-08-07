@@ -1,11 +1,14 @@
-package be.fabrice.inheritance.single.entity;
+package be.fabrice.inheritance.table.entity;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@DiscriminatorValue("SOCIETE")
+@Table(name="SOC")
 public class Societe extends Employeur {
 	@Column(name="NUM")
 	private String numeroEntreprise;

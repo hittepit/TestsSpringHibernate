@@ -13,6 +13,7 @@ Petit projet utile à des fins de démonstration.
 		- Pour le fun, récupération de l'entité réelle derrière le proxy
 	+ Démontsration de l'héritage en une seule table
 		- Single table
+		- One table per class
 
 * TODO
 	+ proxies: hashcode (utilisation des getters)

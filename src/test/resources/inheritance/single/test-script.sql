@@ -1,5 +1,5 @@
-insert into EMP (ID,NOM,KIND) values (1000,'Un','SOCIETE');
-insert into EMP (ID,NOM,KIND) values (1001,'Deux','SOCIETE');
+insert into EMP (ID,NUM,KIND) values (1000,'123456789','SOCIETE');
+insert into EMP (ID,NUM,KIND) values (1001,'456789123','SOCIETE');
 insert into EMP (ID,NOM,KIND) values (1002,'Trois','BOSS');
 insert into EMP (ID,NOM,KIND) values (1003,'Quatre','BOSS');
 
