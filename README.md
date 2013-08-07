@@ -21,3 +21,7 @@ Petit projet utile à des fins de démonstration.
 	+ Ajouter les commentaires sur les tests bidirectionnels
 	+ utilisation de usertypes
 	+ testing avec H2 lorsqu'un schéma est défini
+
+* Resources 
+	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
+	+ <http://docs.jboss.org/hibernate/annotations/3.5/reference/en/html_single/>
