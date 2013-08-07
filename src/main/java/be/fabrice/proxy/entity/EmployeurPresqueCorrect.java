@@ -16,10 +16,6 @@ public class EmployeurPresqueCorrect {
 	
 	@Column(name="NOM")
 	private String name;
-//	
-//	@OneToMany(mappedBy="employeurCorrect")
-//	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE_ORPHAN})
-//	private List<Travailleur> travailleurs;
 
 	public Integer getId() {
 		return id;
@@ -33,25 +29,7 @@ public class EmployeurPresqueCorrect {
 	public void setName(String name) {
 		this.name = name;
 	}
-//	public List<Travailleur> getTravailleurs() {
-//		return travailleurs;
-//	}
-//	public void setTravailleurs(List<Travailleur> travailleurs) {
-//		this.travailleurs = travailleurs;
-//	}
-//	public void addTravailleur(Travailleur travailleur){
-//		if(this.travailleurs==null){
-//			this.travailleurs = new ArrayList<Travailleur>();
-//		}
-//		travailleurs.add(travailleur);
-//		travailleur.setEmployeurPresqueCorrect(this);
-//	}
-//	public void removeTravailleur(Travailleur travailleur){
-//		if(this.travailleurs != null){
-//			this.travailleurs.remove(travailleur);
-//			travailleur.setEmployeur(null);
-//		}
-//	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,6 +37,7 @@ public class EmployeurPresqueCorrect {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
+	
 	/**
 	 * Dans le cadre du test, l'égalité est définie sur base du nom (ce n'est évidemment pas correct dans le monde réel).
 	 */
