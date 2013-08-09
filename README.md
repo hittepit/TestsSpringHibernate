@@ -14,6 +14,7 @@ Petit projet utile à des fins de démonstration.
 	+ Démontsration de l'héritage en une seule table
 		- Single table
 		- One table per class
+	+ Démonstration du flush
 
 * TODO
 	+ proxies: hashcode (utilisation des getters)
@@ -21,6 +22,9 @@ Petit projet utile à des fins de démonstration.
 	+ Ajouter les commentaires sur les tests bidirectionnels
 	+ utilisation de usertypes
 	+ testing avec H2 lorsqu'un schéma est défini
+	+ dirty checking
+		- quand il y a flush
+		- pas d'update si immutable...
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
