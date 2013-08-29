@@ -6,6 +6,8 @@ Petit projet utile à des fins de démonstration.
 
 * Démonstration de certaines fonctionnalités d'Hibernate
 	+ Cohérence du modèle en bidirectionnalité
+	+ Démonstration du ManyToOne
+		- Démontre qu'il n'est pas nécessaire d'avoir une bidirectionnelle pour récupérer l'autre côté d'une relation
 	+ Démonstration de particularité des proxies
 		- Problème du equals
 		- Initialisation des proxies
