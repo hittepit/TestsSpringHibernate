@@ -7,7 +7,10 @@ Petit projet utile à des fins de démonstration.
 * Démonstration de certaines fonctionnalités d'Hibernate
 	+ Cohérence du modèle en bidirectionnalité
 	+ Démonstration du ManyToOne
-		- Démontre qu'il n'est pas nécessaire d'avoir une bidirectionnelle pour récupérer l'autre côté d'une relation
+		- Démontration de la récupération des 'many' à partir du 'one'
+	+ Exemples OneToMany
+		- La sauvegarde par cascading fait un insert du 'many' suivi d'un update pour la foreign key
+		- Démonstration de la possibilité de récupérer le 'one' à partir d'un 'many'
 	+ Démonstration de particularité des proxies
 		- Problème du equals
 		- Initialisation des proxies
