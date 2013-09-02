@@ -22,6 +22,7 @@ Petit projet utile à des fins de démonstration.
 		- Single table
 		- One table per class
 	+ Démonstration du flush
+	+ Démonstration d'une mauvaise utilisation de evict (lire les commentaires)
 
 * TODO
 	+ proxies: hashcode (utilisation des getters)
