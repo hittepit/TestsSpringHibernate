@@ -11,6 +11,8 @@ Petit projet utile à des fins de démonstration.
 	+ Exemples OneToMany
 		- La sauvegarde par cascading fait un insert du 'many' suivi d'un update pour la foreign key
 		- Démonstration de la possibilité de récupérer le 'one' à partir d'un 'many'
+	+ Exemples de ManyToMany
+		- Cascading ou pas, côté maître de la relation
 	+ Démonstration de particularité des proxies
 		- Problème du equals
 		- Initialisation des proxies
@@ -25,6 +27,7 @@ Petit projet utile à des fins de démonstration.
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
 	+ Ajouter les commentaires sur les tests bidirectionnels
+	+ Commentaires sur ManyToOne
 	+ utilisation de usertypes
 	+ testing avec H2 lorsqu'un schéma est défini
 	+ dirty checking
