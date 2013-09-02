@@ -16,7 +16,7 @@ import be.fabrice.evict.entity.Chien;
 
 /**
  * L'objectif ici est de montrer une utilisation erronée d'evict, car pour de mauvaises raisons.
- * La fonctionnalité qui est recherchée et de renommer tous les chiens de la même
+ * La fonctionnalité qui est recherchée est de renommer tous les chiens de la même
  * race qu'un chien dont on a l'id.
  * Voilà ce que ça donne.
  * @author fabrice.claes
