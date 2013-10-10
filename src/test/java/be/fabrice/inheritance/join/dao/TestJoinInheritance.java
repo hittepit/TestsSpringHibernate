@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import be.fabrice.inheritance.join.entity.Boss;
 import be.fabrice.inheritance.join.entity.Employeur;
+import be.fabrice.inheritance.join.entity.EmployeurVo;
 
 @ContextConfiguration("classpath:inheritance/join/test-inheritance-spring.xml")
 public class TestJoinInheritance extends AbstractTransactionalTestNGSpringContextTests{
@@ -37,6 +38,14 @@ public class TestJoinInheritance extends AbstractTransactionalTestNGSpringContex
 		assertNotNull(e);
 		assertEquals(e.getCountry(),"Belgium"); //Init
 		assertFalse(e instanceof Boss); //Aie...
+	}
+	
+	@Test
+	public void testFindEmployeurVoMakesSimplerRequest(){
+		EmployeurVo e = dao.findEmployeurVo(1000);
+		assertNotNull(e);
+		assertEquals(e.getCountry(),"Belgium");
+		assertEquals(e.getId(),Integer.valueOf(1000));
 	}
 	
 	@Test
