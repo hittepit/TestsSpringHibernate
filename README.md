@@ -18,13 +18,15 @@ Petit projet utile à des fins de démonstration.
 		- Initialisation des proxies
 		- Différences entre session.get et session.load
 		- Pour le fun, récupération de l'entité réelle derrière le proxy
-	+ Démontsration de l'héritage en une seule table
+	+ Démonstration de l'héritage en une seule table
 		- Single table
 		- One table per class
+		- Join
 	+ Démonstration du flush
 	+ Démonstration d'une mauvaise utilisation de evict (lire les commentaires)
 
 * TODO
+	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
 	+ Ajouter les commentaires sur les tests bidirectionnels
