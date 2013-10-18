@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
 @Table(name="TRAV")
 public class Travailleur {
@@ -22,6 +25,11 @@ public class Travailleur {
 	@ManyToOne
 	@JoinColumn(name="EMP_ID")
 	private Employeur employeur;
+	
+	@ManyToOne
+	@JoinColumn(name="EMP_2_ID")
+	@Fetch(FetchMode.SELECT)
+	private Employeur employeurWithSelect;
 
 	public Integer getId() {
 		return id;

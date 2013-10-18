@@ -62,4 +62,16 @@ public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringConte
 		List<Travailleur> travailleurs = travailleurDao.findTravailleurs(emp);
 		assertTrue(travailleurs.isEmpty());
 	}
+	
+	/**
+	 * Il est nécessaire de regarder les logs pour comprendre ce "faux" test:
+	 * <ul>
+	 * <li>la propriété employeur est trouvée à l'aide d'un join dans le select du travailleur</li>
+	 * <li>la propriété employeurWithSelect est trouvée  l'aide d'un select séparé</li>
+	 * </ul>
+	 */
+	@Test
+	public void testFindTravailleurUsesJoinByDefautButMayUseSelect(){
+		Travailleur t = employeurDao.findTravailleur(2000);
+	}
 }
