@@ -24,6 +24,7 @@ Petit projet utile à des fins de démonstration.
 		- Join
 	+ Démonstration du flush
 	+ Démonstration d'une mauvaise utilisation de evict (lire les commentaires)
+	+ Fonctionnement des transactions nestées (REQUIRES_NEW)
 
 * TODO
 	+ modèle robuste et Hibernate
