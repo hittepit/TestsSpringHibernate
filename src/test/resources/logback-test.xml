@@ -6,6 +6,9 @@
 	</layout>
   </appender>
 
+	<logger name="org.hibernate.cache" level="DEBUG">
+	</logger>
+
   <root>
 	<level value="ERROR" />
 	<appender-ref ref="STDOUT" />

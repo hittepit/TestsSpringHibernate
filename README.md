@@ -25,6 +25,8 @@ Petit projet utile à des fins de démonstration.
 	+ Démonstration du flush
 	+ Démonstration d'une mauvaise utilisation de evict (lire les commentaires)
 	+ Fonctionnement des transactions nestées (REQUIRES_NEW)
+	+ Utilisation du cache de second niveau
+		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
 
 * TODO
 	+ modèle robuste et Hibernate
