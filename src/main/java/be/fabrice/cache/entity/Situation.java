@@ -10,29 +10,24 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name="ETAT")
-@Cache(region="ETAT",usage=CacheConcurrencyStrategy.READ_ONLY)
-public class EtatCivil {
-	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+@Table(name="SIT")
+@Cache(region="SIT",usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class Situation {
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private String code;
-	private String libelle;
+	private int enfants;
+
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getCode() {
-		return code;
+	public int getEnfants() {
+		return enfants;
 	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getLibelle() {
-		return libelle;
-	}
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public void setEnfants(int enfants) {
+		this.enfants = enfants;
 	}
 }

@@ -2,13 +2,13 @@ package be.fabrice.cache.dao;
 
 import java.util.List;
 
-import org.hibernate.CacheMode;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import be.fabrice.cache.entity.EtatCivil;
 import be.fabrice.cache.entity.Personne;
+import be.fabrice.cache.entity.Situation;
 import be.fabrice.cache.entity.Statut;
 
 @Repository
@@ -33,5 +33,13 @@ public class DaoHibernate extends HibernateDaoSupport implements Dao {
 	
 	public EtatCivil findEtatCivil(Long id){
 		return (EtatCivil)getSession().get(EtatCivil.class,id);
+	}
+
+	public List<Situation> findAllSitutions() {
+		return getSession().createQuery("from Situation").list();
+	}
+
+	public Situation findSituation(Long id) {
+		return (Situation)getSession().get(Situation.class, id);
 	}
 }

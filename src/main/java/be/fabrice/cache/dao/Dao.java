@@ -4,6 +4,7 @@ import java.util.List;
 
 import be.fabrice.cache.entity.EtatCivil;
 import be.fabrice.cache.entity.Personne;
+import be.fabrice.cache.entity.Situation;
 import be.fabrice.cache.entity.Statut;
 
 public interface Dao {
@@ -12,4 +13,6 @@ public interface Dao {
 	Statut findStatut(Long id);
 	List<EtatCivil> findAllEtatCivil();
 	EtatCivil findEtatCivil(Long id);
+	List<Situation> findAllSitutions();
+	Situation findSituation(Long id);
 }

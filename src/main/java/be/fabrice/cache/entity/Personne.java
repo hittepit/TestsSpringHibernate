@@ -1,5 +1,6 @@
 package be.fabrice.cache.entity;
 
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import javax.persistence.Entity;
 
 @Entity
 @Table(name="PERS")
@@ -23,6 +22,10 @@ public class Personne {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ETAT_ID")
 	private EtatCivil etatCivil;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="SIT_ID")
+	private Situation situation;
+	
 	public Long getId() {
 		return id;
 	}
@@ -47,4 +50,11 @@ public class Personne {
 	public void setEtatCivil(EtatCivil etatCivil) {
 		this.etatCivil = etatCivil;
 	}
+	public Situation getSituation() {
+		return situation;
+	}
+	public void setSituation(Situation situation) {
+		this.situation = situation;
+	}
+	
 }

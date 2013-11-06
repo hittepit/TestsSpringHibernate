@@ -27,6 +27,7 @@ Petit projet utile à des fins de démonstration.
 	+ Fonctionnement des transactions nestées (REQUIRES_NEW)
 	+ Utilisation du cache de second niveau
 		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
+		- Fonctionnement des caches NONSTRICT_READ_WRITE
 
 * TODO
 	+ modèle robuste et Hibernate
