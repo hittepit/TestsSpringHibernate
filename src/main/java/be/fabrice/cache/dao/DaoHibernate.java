@@ -6,6 +6,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import be.fabrice.cache.entity.Civilite;
 import be.fabrice.cache.entity.EtatCivil;
 import be.fabrice.cache.entity.Personne;
 import be.fabrice.cache.entity.Situation;
@@ -41,5 +42,14 @@ public class DaoHibernate extends HibernateDaoSupport implements Dao {
 
 	public Situation findSituation(Long id) {
 		return (Situation)getSession().get(Situation.class, id);
+	}
+
+	@Transactional(readOnly=false)
+	public void save(Object entity) {
+		getSession().saveOrUpdate(entity);
+	}
+
+	public List<Civilite> findAllCivilites() {
+		return getSession().createQuery("from Civilite").list();
 	}
 }

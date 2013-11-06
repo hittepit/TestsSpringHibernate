@@ -25,6 +25,9 @@ public class Personne {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="SIT_ID")
 	private Situation situation;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="CIV_ID")
+	private Civilite civilite;
 	
 	public Long getId() {
 		return id;
@@ -56,5 +59,10 @@ public class Personne {
 	public void setSituation(Situation situation) {
 		this.situation = situation;
 	}
-	
+	public Civilite getCivilite() {
+		return civilite;
+	}
+	public void setCivilite(Civilite civilite) {
+		this.civilite = civilite;
+	}
 }

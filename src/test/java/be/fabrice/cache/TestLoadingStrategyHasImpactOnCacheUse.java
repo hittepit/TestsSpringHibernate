@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 import be.fabrice.cache.dao.Dao;
 import be.fabrice.cache.entity.Personne;
 import be.fabrice.cache.entity.Situation;
+import be.fabrice.cache.entity.Statut;
 
 @ContextConfiguration(locations="classpath:cache/test-cache-spring.xml")
 public class TestLoadingStrategyHasImpactOnCacheUse extends AbstractTransactionalTestNGSpringContextTests {
@@ -26,12 +27,14 @@ public class TestLoadingStrategyHasImpactOnCacheUse extends AbstractTransactiona
 	private SecondLevelCacheStatistics etatStats;
 	private SecondLevelCacheStatistics statutStats;
 	private SecondLevelCacheStatistics sitStats;
+	private SecondLevelCacheStatistics civStats;
 	
 	@BeforeClass
 	public void beforeClass(){
 		etatStats = sessionFactory.getStatistics().getSecondLevelCacheStatistics("ETAT");
 		statutStats = sessionFactory.getStatistics().getSecondLevelCacheStatistics("STATUT");
 		sitStats = sessionFactory.getStatistics().getSecondLevelCacheStatistics("SIT");
+		civStats = sessionFactory.getStatistics().getSecondLevelCacheStatistics("CIV");
 	}
 	
 	@BeforeMethod
@@ -40,13 +43,14 @@ public class TestLoadingStrategyHasImpactOnCacheUse extends AbstractTransactiona
 		dao.findAllEtatCivil();
 		dao.findAllStatut();
 		dao.findAllSitutions();
+		dao.findAllCivilites();
 		sessionFactory.getCurrentSession().clear();
 	}
 	
 	@Test
 	public void testCacheIsWorking(){
 		long hitCount = statutStats.getHitCount();
-		dao.findStatut(1L);
+		dao.findStatut(1000L);
 		assertEquals(statutStats.getHitCount(), hitCount+1);
 	}
 
@@ -77,7 +81,16 @@ public class TestLoadingStrategyHasImpactOnCacheUse extends AbstractTransactiona
 	}
 	
 	@Test
-	public void updateOfUpdatableCacheResultInCorrectValue(){
+	public void testLazyLoadingWithEmbeddedHitsCache(){
+		long civHitCount = civStats.getHitCount();
+		Personne p  = dao.find(1001L);
+		assertNotNull(p);
+		assertEquals(p.getCivilite().getNom().getNom(), "Monsieur");
+		assertEquals(etatStats.getHitCount(),civHitCount+1);
+	}
+	
+	@Test
+	public void testUpdateOfUpdatableCacheResultInCorrectValue(){
 		long sitHitCount = sitStats.getHitCount();
 		Situation s = dao.findSituation(2001L);
 		s.setEnfants(10);
@@ -87,11 +100,22 @@ public class TestLoadingStrategyHasImpactOnCacheUse extends AbstractTransactiona
 		Personne p  = dao.find(1001L);
 		assertNotNull(p);
 		assertEquals(p.getSituation().getEnfants(),10);
-		assertEquals(sitStats.getHitCount(),sitHitCount+1,"Pas de hit, car le cache invalidé ");
+		assertEquals(sitStats.getHitCount(),sitHitCount+1,"Pas de hit, car le cache est invalidé ");
 		sessionFactory.getCurrentSession().clear();
 		p  = dao.find(1001L);
 		assertNotNull(p);
 		assertEquals(p.getSituation().getEnfants(),10);
 		assertEquals(sitStats.getHitCount(),sitHitCount+2,"Un nouveau hit, le cache étant correct");
+	}
+	
+	@Test
+	public void testInsertDoesNotCreatesACacheEntry(){
+		long statutPutCount = statutStats.getPutCount();
+		Statut statut = new Statut();
+		statut.setCode("I");
+		statut.setLibelle("Indépendant");
+		dao.save(statut);
+		assertNotNull(statut.getId());
+		assertEquals(statutStats.getPutCount(), statutPutCount);
 	}
 }

@@ -2,6 +2,7 @@ package be.fabrice.cache.dao;
 
 import java.util.List;
 
+import be.fabrice.cache.entity.Civilite;
 import be.fabrice.cache.entity.EtatCivil;
 import be.fabrice.cache.entity.Personne;
 import be.fabrice.cache.entity.Situation;
@@ -15,4 +16,6 @@ public interface Dao {
 	EtatCivil findEtatCivil(Long id);
 	List<Situation> findAllSitutions();
 	Situation findSituation(Long id);
+	void save(Object entity);
+	List<Civilite> findAllCivilites();
 }
