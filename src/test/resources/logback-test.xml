@@ -8,7 +8,9 @@
 
 	<logger name="org.hibernate.cache" level="DEBUG">
 	</logger>
-
+	
+	<logger name="org.apache.commons.dbcp" level="DEBUG" />
+  
   <root>
 	<level value="ERROR" />
 	<appender-ref ref="STDOUT" />
