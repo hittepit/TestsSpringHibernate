@@ -30,7 +30,11 @@ Petit projet utile à des fins de démonstration.
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
 
++ Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
+mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
+
 * TODO
+	+ type des collections des entités si eager, lazy ou prédéfini
 	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
