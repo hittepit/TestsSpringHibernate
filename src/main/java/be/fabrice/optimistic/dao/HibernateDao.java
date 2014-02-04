@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 
+import be.fabrice.optimistic.entity.Boss;
 import be.fabrice.optimistic.entity.Employee;
 
 @Repository
@@ -15,10 +16,15 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 	public Employee findEmployee(Long id) {
 		return (Employee) getSession().get(Employee.class, id);
 	}
+	
+	@Override
+	public Boss findBoss(Long id) {
+		return (Boss) getSession().get(Boss.class,id);
+	}
 
 	@Override
 	@Transactional(readOnly=false)
-	public void save(Employee employee) {
-		getSession().saveOrUpdate(employee);
+	public void save(Object entity) {
+		getSession().saveOrUpdate(entity);
 	}
 }

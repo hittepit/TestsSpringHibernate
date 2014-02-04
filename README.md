@@ -32,15 +32,14 @@ Petit projet utile à des fins de démonstration.
 	+ Démonstration du type réel d'une List lazyloadée
 	+ optimistic locking
 		- fonctionnement avec Timestamp
+		- fonctionnement avec Integer
+		- locking en cas de delete et d'update/delete concurrent
+		- pas de locking si enfant et parent modifiés séprément
 
 + Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
 
 * TODO
-	+ optimistic locking
-		- fonctionnement avec version int
-		- quid d'une suppression d'une entité modifiée?
-		- quid si modification entité enfant et optimistic locking sur parent?
 	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
