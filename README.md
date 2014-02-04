@@ -30,13 +30,16 @@ Petit projet utile à des fins de démonstration.
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
 	+ Démonstration du type réel d'une List lazyloadée
+	+ optimistic locking
+		- fonctionnement avec Timestamp
 
 + Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
 
 * TODO
 	+ optimistic locking
-		- fonctionnement
+		- fonctionnement avec version int
+		- quid d'une suppression d'une entité modifiée?
 		- quid si modification entité enfant et optimistic locking sur parent?
 	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
