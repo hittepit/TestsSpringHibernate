@@ -35,7 +35,9 @@ Petit projet utile à des fins de démonstration.
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
 
 * TODO
-	+ type des collections des entités si eager, lazy ou prédéfini
+	+ optimistic locking
+		- fonctionnement
+		- quid si modification entité enfant et optimistic locking sur parent?
 	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
