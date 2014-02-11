@@ -36,11 +36,16 @@ Petit projet utile à des fins de démonstration.
 		- locking en cas de delete et d'update/delete concurrent
 		- pas de locking si enfant et parent modifiés séprément
 
-+ Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
+* Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
 
+* Démonstration qu'Hibernate peut s'en sortir avec un modèle robuste
+	+ Pas de constructeur sans paramètre public
+	+ Pas de setter
+	+ Utilisation de Value Object avec des UserTypes
+	
+
 * TODO
-	+ modèle robuste et Hibernate
 	+ proxies: hashcode (utilisation des getters)
 	+ TODO: héritage, les autres stratégies
 	+ Ajouter les commentaires sur les tests bidirectionnels
