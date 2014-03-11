@@ -26,12 +26,4 @@ public class TestRectangleRobustness {
 	public void testImpossibleToCreateRectangleWithNullLargeur(){
 		Rectangle r = new Rectangle(1.0, 0.0);
 	}
-	
-	@Test
-	public void testSurfaceIsCorrect(){
-		Rectangle rectangle = new Rectangle(5.5, 3.0);
-		
-		assertEquals(rectangle.getSurface(), 16.5);
-	}
-
 }

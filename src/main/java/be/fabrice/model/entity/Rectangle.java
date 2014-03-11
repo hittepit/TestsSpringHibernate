@@ -9,7 +9,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name="RECT")
 public class Rectangle {
-	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private double longueur;
 	private double largeur;
@@ -26,17 +25,30 @@ public class Rectangle {
 		this.longueur = longueur;
 		this.largeur = largeur;
 	}
-	
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long getId() {
 		return id;
+	}
+	public void setLongueur(double longueur) {
+		if(longueur<=0.0){
+			throw new IllegalArgumentException("La longueur doit être strictement positive");
+		}
+		this.longueur = longueur;
 	}
 	public double getLongueur() {
 		return longueur;
 	}
+	public void setLargeur(double largeur) {
+		if(largeur<=0.0){
+			throw new IllegalArgumentException("La largeur doit être strictement positive");
+		}
+		this.largeur = largeur;
+	}
 	public double getLargeur() {
 		return largeur;
-	}
-	public double getSurface() {
-		return longueur * largeur;
 	}
 }
