@@ -4,7 +4,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import be.fabrice.model.entity.Book;
-import be.fabrice.model.entity.Rectangle;
+import be.fabrice.model.entity.RectangleV1;
 
 @Repository
 public class HibernateDao extends HibernateDaoSupport implements Dao {
@@ -15,8 +15,8 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 	}
 
 	@Override
-	public Rectangle findRectangle(Long id) {
-		return (Rectangle) getSession().get(Rectangle.class,id);
+	public RectangleV1 findRectangle(Long id) {
+		return (RectangleV1) getSession().get(RectangleV1.class,id);
 	}
 
 	@Override
