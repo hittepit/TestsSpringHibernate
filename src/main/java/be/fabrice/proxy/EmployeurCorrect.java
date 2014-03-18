@@ -1,4 +1,4 @@
-package be.fabrice.proxy.entity;
+package be.fabrice.proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,15 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EMP")
-public class Employeur {
+@Table(name="EMPTER")
+public class EmployeurCorrect {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="ID")
 	private Integer id;
 	
 	@Column(name="NOM")
 	private String name;
-
+	
 	public Integer getId() {
 		return id;
 	}
@@ -34,7 +34,7 @@ public class Employeur {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		return result;
 	}
 	
@@ -47,14 +47,15 @@ public class Employeur {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof EmployeurCorrect))
 			return false;
-		Employeur other = (Employeur) obj;
-		if (name == null) {
-			if (other.name != null)
+		EmployeurCorrect other = (EmployeurCorrect) obj;
+		if (getName() == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!getName().equals(other.getName()))
 			return false;
 		return true;
 	}
+
 }

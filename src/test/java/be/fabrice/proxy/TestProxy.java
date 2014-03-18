@@ -1,4 +1,4 @@
-package be.fabrice.proxy.dao;
+package be.fabrice.proxy;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -14,10 +14,7 @@ import org.springframework.test.context.testng.AbstractTransactionalTestNGSpring
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import be.fabrice.proxy.entity.Employeur;
-import be.fabrice.proxy.entity.EmployeurCorrect;
-import be.fabrice.proxy.entity.EmployeurPresqueCorrect;
-import be.fabrice.proxy.entity.Travailleur;
+import be.fabrice.utils.TransactionalTestBase;
 
 /**
  * <p>Le but de ce test est de montrer certains aspects de l'utilisation de proxies par Hibernate,
@@ -48,10 +45,7 @@ import be.fabrice.proxy.entity.Travailleur;
  *
  */
 @ContextConfiguration(locations="classpath:proxy/test-proxy-spring.xml")
-public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
-	@Autowired
-	private Dao dao;
-	
+public class TestProxy extends TransactionalTestBase {
 	@BeforeMethod
 	public void beforeTest(){
 		executeSqlScript("proxy/test-script.sql", false);
@@ -67,7 +61,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1000);
 		employeurNotManaged.setName("Anybody");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertNotEquals(t.getEmployeur(), employeurNotManaged);
 		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
@@ -84,7 +78,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1000);
 		employeurNotManaged.setName("Anybody");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeur().getId(), employeurNotManaged.getId());
@@ -102,7 +96,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1001);
 		employeurNotManaged.setName("Anybody else");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertNotEquals(t.getEmployeurPresqueCorrect(), employeurNotManaged);
 		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
@@ -119,7 +113,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1001);
 		employeurNotManaged.setName("Anybody else");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeurPresqueCorrect().getId(), employeurNotManaged.getId());
@@ -136,7 +130,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1002);
 		employeurNotManaged.setName("Another Anybody else");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertEquals(t.getEmployeurCorrect(), employeurNotManaged);
 		assertEquals(t.getEmployeurCorrect().getName(), employeurNotManaged.getName());
@@ -153,7 +147,8 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 		employeurNotManaged.setId(1002);
 		employeurNotManaged.setName("Another Anybody else");
 		
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
+
 		assertEquals(t.getEmployeurCorrect().getName(), employeurNotManaged.getName());
 		assertEquals(t.getEmployeurCorrect().getId(), employeurNotManaged.getId());
 		assertEquals(t.getEmployeurCorrect(), employeurNotManaged);
@@ -164,7 +159,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testProxyIntializedIfPropertyAccessedThroughGetter(){
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertFalse(Hibernate.isInitialized(t.getEmployeur()), "Proxy non initialisé");
 		t.getEmployeur().getName();
@@ -177,7 +172,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testProxyIntializedIfIdAccessedThroughGetter(){
-		Travailleur t = dao.findTravailleur(1001);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
 		
 		assertFalse(Hibernate.isInitialized(t.getEmployeur()), "Proxy non initialisé");
 		t.getEmployeur().getId();
@@ -190,8 +185,8 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testProxyIsReturnedIfAlreadyLoadedInSession(){
-		Travailleur t = dao.findTravailleur(1001);
-		Employeur e = dao.findEmployeur(1000);
+		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
+		Employeur e = (Employeur) getSession().get(Employeur.class,1000);
 		
 		assertFalse(e.getClass().equals(Employeur.class),"C'est un proxy, parce que déjà chargé");
 		assertSame(e, t.getEmployeur(),"En fait...");
@@ -203,8 +198,8 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test 
 	public void testGetDoesNotLoadAProxy(){
-		Employeur e1 = dao.findEmployeur(1000);
-		assertEquals(e1.getClass(),Employeur.class,"Ce n'est pas un proxy");
+		Employeur e = (Employeur) getSession().get(Employeur.class,1000);
+		assertEquals(e.getClass(),Employeur.class,"Ce n'est pas un proxy");
 	}
 	
 	/**
@@ -213,7 +208,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testLoadLoadsAProxyIfNotYetLoaded(){
-		Employeur e = dao.loadEmployeur(1000);
+		Employeur e = (Employeur) getSession().load(Employeur.class,1000);
 		assertFalse(Hibernate.isInitialized(e));
 	}
 	
@@ -222,8 +217,8 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testLoadLoadsTheEntityIfAlreadyLoaded(){
-		Employeur e1 = dao.findEmployeur(1000);
-		Employeur e2 = dao.loadEmployeur(1000);
+		Employeur e1 = (Employeur) getSession().get(Employeur.class,1000);
+		Employeur e2 = (Employeur) getSession().load(Employeur.class,1000);
 		assertEquals(e2.getClass(),Employeur.class,"Ce n'est pas un proxy");
 		assertSame(e1,e2);
 	}
@@ -234,7 +229,7 @@ public class TestProxy extends AbstractTransactionalTestNGSpringContextTests {
 	 */
 	@Test
 	public void testItIsPossibleToGetTheEntity(){
-		Employeur e = dao.loadEmployeur(1000);
+		Employeur e = (Employeur) getSession().load(Employeur.class,1000);
 		assertFalse(Hibernate.isInitialized(e));
 		assertTrue(e instanceof HibernateProxy);
 		Employeur entity = (Employeur)((HibernateProxy)e).getHibernateLazyInitializer().getImplementation();

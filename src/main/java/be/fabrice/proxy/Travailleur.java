@@ -1,4 +1,4 @@
-package be.fabrice.proxy.entity;
+package be.fabrice.proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
