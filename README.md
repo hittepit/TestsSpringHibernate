@@ -60,3 +60,4 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
 	+ <http://docs.jboss.org/hibernate/annotations/3.5/reference/en/html_single/>
+	+ P6Spy <https://github.com/p6spy/p6spy>

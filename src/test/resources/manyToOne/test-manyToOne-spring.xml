@@ -10,9 +10,9 @@
 	<context:component-scan base-package="be.fabrice.manyToOne" />
 	
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
- 	   <property name="driverClassName" value="org.h2.Driver" />
+ 	   <property name="driverClassName" value="com.p6spy.engine.spy.P6SpyDriver" />
  	   <property name="username" value="h2" />
- 	   <property name="url" value="jdbc:h2:mem:test;MVCC=TRUE" />
+ 	   <property name="url" value="jdbc:p6spy:h2:mem:test;MVCC=TRUE" />
     </bean>
 
     <bean id="sessionFactory"
@@ -23,7 +23,7 @@
  	   <property name="hibernateProperties">
  		   <value>
  			   hibernate.dialect=org.hibernate.dialect.H2Dialect
- 			   hibernate.show_sql=true
+ 			   hibernate.show_sql=false
  			   hibernate.hbm2ddl.auto=create-drop
  		   </value>
  	   </property>

@@ -6,10 +6,19 @@
 	</layout>
   </appender>
 
+  <appender name="P6SPY"  class="ch.qos.logback.core.ConsoleAppender">
+	<layout class="ch.qos.logback.classic.PatternLayout">
+  	<Pattern>Tests spring Hibernate- %d{HH:mm:ss.SSS} %-5level %logger{55} - %msg%n</Pattern>
+	</layout>
+  </appender>
+  
+
 	<logger name="org.hibernate.cache" level="DEBUG">
 	</logger>
 	
 	<logger name="org.apache.commons.dbcp" level="DEBUG" />
+
+	<logger name="p6spy" level="INFO" />
   
   <root>
 	<level value="ERROR" />
