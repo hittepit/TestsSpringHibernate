@@ -6,22 +6,16 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import be.fabrice.manyToOne.entity.Employeur;
 import be.fabrice.manyToOne.entity.Travailleur;
+import be.fabrice.utils.TransactionalTestBase;
 
 @ContextConfiguration(locations="classpath:manyToOne/test-manyToOne-spring.xml")
-public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringContextTests {
-	@Autowired
-	private TravailleurDao travailleurDao;
-	@Autowired
-	private EmployeurDao employeurDao;
-	
+public class TestFindTravailleurs extends TransactionalTestBase {
 	@BeforeMethod
 	public void beforeMethod(){
 		executeSqlScript("manyToOne/test-script.sql", false);
@@ -29,10 +23,12 @@ public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringConte
 	
 	@Test
 	public void testItIsPossibleToFindOtherEndOfMonoDirectionalRelation(){
-		Employeur emp = employeurDao.find(1000);
+		Employeur emp = (Employeur)getSession().get(Employeur.class, 1000);
 		assertNotNull(emp);
 		
-		List<Travailleur> travailleurs = travailleurDao.findTravailleurs(emp);
+		String hql = "from Travailleur t where t.employeur = :e";
+		
+		List<Travailleur> travailleurs = getSession().createQuery(hql).setParameter("e", emp).list();
 		assertEquals(travailleurs.size(), 2);
 		assertTrue(travailleurs.contains(new Travailleur(){
 			{setNom("Trav1");} //Puisque le equals est sur le nom...
@@ -44,10 +40,12 @@ public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringConte
 	
 	@Test
 	public void testAgainItIsPossibleToFindOtherEndOfMonoDirectionalRelation(){
-		Employeur emp = employeurDao.find(1001);
+		Employeur emp = (Employeur)getSession().get(Employeur.class, 1001);
 		assertNotNull(emp);
 		
-		List<Travailleur> travailleurs = travailleurDao.findTravailleurs(emp);
+		String hql = "from Travailleur t where t.employeur = :e";
+		List<Travailleur> travailleurs = getSession().createQuery(hql).setParameter("e", emp).list();
+		
 		assertEquals(travailleurs.size(), 1);
 		assertTrue(travailleurs.contains(new Travailleur(){
 			{setNom("Trav3");}
@@ -56,10 +54,11 @@ public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringConte
 	
 	@Test
 	public void testAgainIfNoTravailleurGetsAnEmptyList(){
-		Employeur emp = employeurDao.find(1002);
+		Employeur emp = (Employeur)getSession().get(Employeur.class, 1002);
 		assertNotNull(emp);
 		
-		List<Travailleur> travailleurs = travailleurDao.findTravailleurs(emp);
+		String hql = "from Travailleur t where t.employeur = :e";
+		List<Travailleur> travailleurs = getSession().createQuery(hql).setParameter("e", emp).list();
 		assertTrue(travailleurs.isEmpty());
 	}
 	
@@ -72,6 +71,6 @@ public class TestFindTravailleurs extends AbstractTransactionalTestNGSpringConte
 	 */
 	@Test
 	public void testFindTravailleurUsesJoinByDefautButMayUseSelect(){
-		Travailleur t = employeurDao.findTravailleur(2000);
+		getSession().get(Travailleur.class, 2000);
 	}
 }
