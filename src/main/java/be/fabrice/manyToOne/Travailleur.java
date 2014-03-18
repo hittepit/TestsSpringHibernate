@@ -1,4 +1,4 @@
-package be.fabrice.manyToOne.entity;
+package be.fabrice.manyToOne;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

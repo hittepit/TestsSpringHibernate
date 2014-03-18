@@ -1,4 +1,4 @@
-package be.fabrice.manyToOne.dao;
+package be.fabrice.manyToOne;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -10,8 +10,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import be.fabrice.manyToOne.entity.Employeur;
-import be.fabrice.manyToOne.entity.Travailleur;
 import be.fabrice.utils.TransactionalTestBase;
 
 @ContextConfiguration(locations="classpath:manyToOne/test-manyToOne-spring.xml")
@@ -22,7 +20,7 @@ public class TestFindTravailleurs extends TransactionalTestBase {
 	}
 	
 	@Test
-	public void testItIsPossibleToFindOtherEndOfMonoDirectionalRelation(){
+	public void testFindOneToMany1(){
 		Employeur emp = (Employeur)getSession().get(Employeur.class, 1000);
 		assertNotNull(emp);
 		
@@ -39,7 +37,7 @@ public class TestFindTravailleurs extends TransactionalTestBase {
 	}
 	
 	@Test
-	public void testAgainItIsPossibleToFindOtherEndOfMonoDirectionalRelation(){
+	public void testFindOneToMany2(){
 		Employeur emp = (Employeur)getSession().get(Employeur.class, 1001);
 		assertNotNull(emp);
 		
@@ -53,7 +51,7 @@ public class TestFindTravailleurs extends TransactionalTestBase {
 	}
 	
 	@Test
-	public void testAgainIfNoTravailleurGetsAnEmptyList(){
+	public void testFindOneToMany3(){
 		Employeur emp = (Employeur)getSession().get(Employeur.class, 1002);
 		assertNotNull(emp);
 		
