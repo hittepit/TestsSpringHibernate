@@ -13,7 +13,7 @@ Petit projet utile à des fins de démonstration.
 		- Démonstration de la possibilité de récupérer le 'one' à partir d'un 'many'
 	+ Exemples de ManyToMany
 		- Cascading ou pas, côté maître de la relation
-	+ Démonstration de particularité des proxies
+	+ [Démonstration des particularités des proxies](https://github.com/hittepit/TestsSpringHibernate/wiki/Proxies)
 		- Problème du equals
 		- Initialisation des proxies
 		- Différences entre session.get et session.load
