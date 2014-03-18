@@ -6,7 +6,7 @@ Petit projet utile à des fins de démonstration.
 
 * Démonstration de certaines fonctionnalités d'Hibernate
 	+ Cohérence du modèle et bidirectionnalité
-	+ Démonstration du ManyToOne
+	+ [Démonstration du ManyToOne](https://github.com/hittepit/TestsSpringHibernate/wiki/Relations-ManyToOne)
 		- Démontration de la récupération des 'many' à partir du 'one'
 	+ Exemples OneToMany
 		- La sauvegarde par cascading fait un insert du 'many' suivi d'un update pour la foreign key
