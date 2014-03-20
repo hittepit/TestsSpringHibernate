@@ -36,6 +36,8 @@ Petit projet utile à des fins de démonstration.
 		- locking en cas de delete et d'update/delete concurrent
 		- pas de locking si enfant et parent modifiés séprément
 	+ jointure sur des entités non liées
+	+ démonstration du fonctionnement des nullable=false, length=xxx ou unique=true dans @Column
+		- validation minimale au niveau d'Hibernate
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
