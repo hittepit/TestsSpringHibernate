@@ -38,6 +38,7 @@ Petit projet utile à des fins de démonstration.
 	+ jointure sur des entités non liées
 	+ démonstration de la validation des propriétés
 		- sans hibernate-validator, validation minimale au niveau d'Hibernate
+	+ requêtes complexes
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
