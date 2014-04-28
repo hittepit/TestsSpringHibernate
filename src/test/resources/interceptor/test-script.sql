@@ -1,0 +1,1 @@
+insert into PERSON (ID,F,L) values (1000,'Toto','Lehéros');
