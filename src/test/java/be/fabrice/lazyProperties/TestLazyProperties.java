@@ -88,9 +88,4 @@ public class TestLazyProperties extends TransactionalTestBase{
 		
 		assertEquals(countRowsInTable("PERS1"),0, "Must be empty");
 	}
-	
-	@AfterMethod
-	public void afterMethod(){
-		executeSqlScript("lazyProperties/drop.sql", false);
-	}
 }

@@ -3,7 +3,6 @@ package be.fabrice.validation;
 import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.DataException;
-import org.junit.BeforeClass;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;

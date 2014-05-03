@@ -1,7 +1,6 @@
 package be.fabrice.optimistic.dao;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 

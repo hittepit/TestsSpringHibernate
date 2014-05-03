@@ -8,9 +8,7 @@ import static org.testng.Assert.assertTrue;
 
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

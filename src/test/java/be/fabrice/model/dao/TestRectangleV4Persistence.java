@@ -2,13 +2,11 @@ package be.fabrice.model.dao;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.fail;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.hibernate.PropertyAccessException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

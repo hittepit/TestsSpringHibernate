@@ -138,7 +138,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		Person p = dao.find(1000);
 		p.setName("toto");
 
-		Person p2 = dao.find(1001);
+		dao.find(1001);
 		assertEquals(mockSessionFlushListener.getInvocation(),0,"No Flush");
 	}
 
@@ -151,7 +151,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		Person p = dao.find(1000);
 		p.setName("toto");
 
-		Person p2 = dao.findById(1001);
+		dao.findById(1001);
 		assertEquals(mockSessionFlushListener.getInvocation(),0,"No global flush");
 		assertEquals(mockFlushEntityListener.getInvocation(),1,"Specific Flush beacuse could be necessary");
 		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),1);

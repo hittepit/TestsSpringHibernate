@@ -2,9 +2,6 @@ package be.fabrice.join.dao;
 
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

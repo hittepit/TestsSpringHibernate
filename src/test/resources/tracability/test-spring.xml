@@ -10,7 +10,7 @@
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
  	   <property name="driverClassName" value="org.h2.Driver" />
  	   <property name="username" value="h2" />
- 	   <property name="url" value="jdbc:h2:mem:test;MVCC=TRUE;INIT=runscript from 'classpath:lazyProperties/create.sql'" />
+ 	   <property name="url" value="jdbc:h2:mem:test;MVCC=TRUE;INIT=runscript from 'classpath:tracability/create.sql'" />
     </bean>
 
     <bean id="sessionFactory"
@@ -24,11 +24,14 @@
  			   hibernate.show_sql=true
  		   </value>
  	   </property>
- 	   <property name="packagesToScan" value="be.fabrice.lazyProperties.entity" />
+ 	   <property name="packagesToScan" value="be.fabrice.tracability.entity" />
  	   <property name="eventListeners">
 	        <map>
+	            <entry key="post-update">
+	                <bean class="be.fabrice.tracability.listener.TracabilityListener"></bean>
+	            </entry>
 	            <entry key="post-insert">
-	                <bean class="be.fabrice.lazyProperties.entity.LazyPropertiesInsertionListener"></bean>
+	                <bean class="be.fabrice.tracability.listener.TracabilityListener"></bean>
 	            </entry>
 	        </map>
 	    </property>

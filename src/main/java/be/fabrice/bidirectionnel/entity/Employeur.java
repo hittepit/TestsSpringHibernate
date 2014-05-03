@@ -24,8 +24,8 @@ public class Employeur {
 	@Column(name="NOM")
 	private String name;
 	
-	@OneToMany(mappedBy="employeur")
-	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE_ORPHAN})
+	@OneToMany(mappedBy="employeur",orphanRemoval=true)
+	@Cascade({CascadeType.SAVE_UPDATE})
 	private List<Travailleur> travailleurs;
 
 	public Integer getId() {
