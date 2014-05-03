@@ -40,6 +40,7 @@ Petit projet utile à des fins de démonstration.
 		- sans hibernate-validator, validation minimale au niveau d'Hibernate
 	+ requêtes complexes
 	+ Test d'un intercepteur
+	+ démonstration de l'initilisation lazy de propriétés associées à une entité
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
