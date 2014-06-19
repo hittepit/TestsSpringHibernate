@@ -58,7 +58,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	+ Ajouter les commentaires sur les tests bidirectionnels
 	+ Commentaires sur ManyToOne
 	+ utilisation de usertypes
-	+ testing avec H2 lorsqu'un schéma est défini
+	+ query cache
 	+ dirty checking
 		- quand il y a flush
 		- pas d'update si immutable...
