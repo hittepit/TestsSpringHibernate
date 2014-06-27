@@ -36,6 +36,7 @@ Petit projet utile à des fins de démonstration.
 		- locking en cas de delete et d'update/delete concurrent
 		- pas de locking si enfant et parent modifiés séprément
 	+ jointure sur des entités non liées
+	+ jointure sur des colonnes qui ne sont ni des PK ni des FK
 	+ démonstration de la validation des propriétés
 		- sans hibernate-validator, validation minimale au niveau d'Hibernate
 	+ requêtes complexes
