@@ -37,6 +37,7 @@ Petit projet utile à des fins de démonstration.
 		- pas de locking si enfant et parent modifiés séprément
 	+ jointure sur des entités non liées
 	+ jointure sur des colonnes qui ne sont ni des PK ni des FK
+		- erreur dans le cas des mapping OneToOne dans ce cas (mais fonctionne avec des OneToMany)
 	+ démonstration de la validation des propriétés
 		- sans hibernate-validator, validation minimale au niveau d'Hibernate
 	+ requêtes complexes
