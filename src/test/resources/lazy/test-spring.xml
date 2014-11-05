@@ -7,12 +7,10 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd" default-autowire="byName">
 
-	<context:component-scan base-package="be.fabrice.collectionType" />
-	
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
  	   <property name="driverClassName" value="org.h2.Driver" />
  	   <property name="username" value="h2" />
- 	   <property name="url" value="jdbc:h2:mem:test;MVCC=TRUE" />
+ 	   <property name="url" value="jdbc:h2:mem:test-lazy;MVCC=TRUE" />
     </bean>
 
     <bean id="sessionFactory"
@@ -21,17 +19,13 @@
  		   <ref bean="dataSource" />
  	   </property>
  	   <property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-				<prop key="hibernate.cache.use_second_level_cache">true</prop>
-				<prop key="hibernate.cache.use_query_cache">false</prop>
-				<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
- 			   <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
- 			   <prop key="hibernate.generate_statistics">true</prop>
-			</props>
+ 		   <value>
+ 			   hibernate.dialect=org.hibernate.dialect.H2Dialect
+ 			   hibernate.show_sql=true
+ 			   hibernate.hbm2ddl.auto=create-drop
+ 		   </value>
  	   </property>
- 	   <property name="packagesToScan" value="be.fabrice.collectionType.entity" />
+ 	   <property name="packagesToScan" value="be.fabrice.lazy.entity" />
     </bean>
     
     <tx:annotation-driven transaction-manager="transactionManager" />
