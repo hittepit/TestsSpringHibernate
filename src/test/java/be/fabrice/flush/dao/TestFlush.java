@@ -8,11 +8,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -173,6 +176,38 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),1000);
 		assertEquals(persons.size(),1);
 		assertEquals(persons.get(0).getName(),"toto","Entity has been updated");
+	}
+	
+	/**
+	 * Le commit d'une transaction provoque un flush (si le FlushMode est en AUTO)
+	 */
+	@Test
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public void testCommitTransactionFlushes(){
+		Session session = sessionFactory.getCurrentSession();
+		Transaction t = session.beginTransaction();
+		Person p = (Person) session.get(Person.class, 1000);
+		p.setName("toto");
+		t.commit();
+		assertEquals(mockSessionFlushListener.getInvocation(),1,"Flush was asked");
+		assertEquals(mockFlushEntityListener.getInvocation(),1,"Yep");	
+		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),1,"Une entité flushée");
+	}
+	
+	/**
+	 * Le rollback d'une transaction ne provoque pas de flush
+	 */
+	@Test
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public void testRollbackTransactionDoesNotFlush(){
+		Session session = sessionFactory.getCurrentSession();
+		Transaction t = session.beginTransaction();
+		Person p = (Person) session.get(Person.class, 1000);
+		p.setName("toto");
+		t.rollback();
+		assertEquals(mockSessionFlushListener.getInvocation(),0);
+		assertEquals(mockFlushEntityListener.getInvocation(),0);	
+		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),0);
 	}
 
 	/**
