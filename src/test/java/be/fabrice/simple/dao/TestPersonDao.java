@@ -1,5 +1,8 @@
 package be.fabrice.simple.dao;
 
+import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
+import static com.ninja_squad.dbsetup.Operations.insertInto;
+import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
@@ -7,9 +10,10 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.sql.ResultSet;
-
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -21,6 +25,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import be.fabrice.simple.entity.Person;
+
+import com.ninja_squad.dbsetup.DbSetup;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
+import com.ninja_squad.dbsetup.operation.Operation;
 
 /**
  * <p>Démonstration de tests sur un Dao Spring-Hibernate</p>
@@ -86,6 +94,9 @@ public class TestPersonDao extends AbstractTransactionalTestNGSpringContextTests
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	private DataSource dataSource;
+	
 	/**
 	 * <p>Initialisation de chaque méthode de test de la classe. Comme on est "transactional", un rollback 
 	 * est automatique effectué après chaque méthode de test.</p>
@@ -96,7 +107,20 @@ public class TestPersonDao extends AbstractTransactionalTestNGSpringContextTests
 	 */
 	@BeforeMethod
 	public void beforeMethod(){
-		executeSqlScript("simple/test-script.sql", false);
+		Operation operation = sequenceOf(
+				deleteAllFrom("PERSON"),
+				insertInto("PERSON")
+					.columns("ID","FIRSTNAME","LASTNAME")
+					.values(1000,"F1","L1")
+					.values(1001,"F2","L1")
+					.values(1002,"F3","L1")
+					.values(1003,"F4","L2")
+					.values(1004,"F5","L2")
+					.values(1005,"F6","L3")
+					.build()
+					);
+		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operation);
+        dbSetup.launch();
 	}
 	
 	/**
@@ -197,15 +221,11 @@ public class TestPersonDao extends AbstractTransactionalTestNGSpringContextTests
 	 * <p>Néanmoins, le test ne fonctionne que parce que Hibernate a généré la DB de test. En production, c'est rarement
 	 * le cas. Il ne garantit donc pas que la contrainte existera dans tous les cas.</p>
 	 */
-	@Test
+	@Test(expectedExceptions=ConstraintViolationException.class)
 	public void testConstraintViolationShouldFail(){
 		Person p = new Person();
 		p.setFirstname("F1");
 		p.setLastname("one");
-		try{
-			personDao.save(p);
-			fail();
-		} catch(ConstraintViolationException e){
-		}
+		personDao.save(p);
 	}
 }
