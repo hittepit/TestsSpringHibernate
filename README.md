@@ -29,7 +29,9 @@ Petit projet utile à des fins de démonstration.
 		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
-	+ Démonstration du type réel d'une List lazyloadée
+	+ Utilisation de lazy 
+		- type réel d'une List lazyloadée
+		- méthodes qui initialisent une collection lazy loadée
 	+ optimistic locking
 		- fonctionnement avec Timestamp
 		- fonctionnement avec Integer

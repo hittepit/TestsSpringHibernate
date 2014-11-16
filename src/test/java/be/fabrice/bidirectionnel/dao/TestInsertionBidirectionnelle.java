@@ -132,7 +132,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	private SessionFactory sessionFactory;
 	
 	@Test
-	public void TestInsertEmployeur() {
+	public void testInsertEmployeur() {
 		Employeur e = new Employeur();
 		e.setName("test");
 		employeurDao.save(e);
@@ -148,7 +148,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestInsertTravailleur() {
+	public void testInsertTravailleur() {
 		Travailleur t = new Travailleur();
 		t.setNom("toto");
 		travailleurDao.save(t);
@@ -165,7 +165,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestInsertOfBothCascading(){
+	public void testInsertOfBothCascading(){
 		Employeur e = new Employeur();
 		e.setName("test");
 		Travailleur t = new Travailleur();
@@ -184,7 +184,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestAddTravailleurToExistingEmployeur(){
+	public void testAddTravailleurToExistingEmployeur(){
 		executeSqlScript("bidirectionnel/test-script.sql", false);
 		
 		Employeur e = employeurDao.find(1000);
@@ -205,7 +205,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestInsertOfEmployeurInsertTravailleurIfTravailleurIncoherentButTravailleurRemainsIncoherent(){
+	public void testInsertOfEmployeurInsertTravailleurIfTravailleurIncoherentButTravailleurRemainsIncoherent(){
 		Employeur e = new Employeur();
 		e.setName("test");
 		final Travailleur t = new Travailleur();
@@ -224,7 +224,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestInsertOfBothInsertBothIfEmployeurIncoherentButEmployeurRemainsIncoherent(){
+	public void testInsertOfBothInsertBothIfEmployeurIncoherentButEmployeurRemainsIncoherent(){
 		Employeur e = new Employeur();
 		e.setName("test");
 		Travailleur t = new Travailleur();
@@ -241,7 +241,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestInsertNewTravailleurForExistingEmployeurDoesnotUpdateEmployeur(){
+	public void testInsertNewTravailleurForExistingEmployeurDoesnotUpdateEmployeur(){
 		executeSqlScript("bidirectionnel/test-script.sql", false);
 		
 		Employeur e = employeurDao.find(1000);
@@ -259,7 +259,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestSaveExistingEmployeurWhenIncoherentNewTravailleurDoesNotCreateAnything(){
+	public void testSaveExistingEmployeurWhenIncoherentNewTravailleurDoesNotCreateAnything(){
 		executeSqlScript("bidirectionnel/test-script.sql", false);
 		
 		Employeur e = employeurDao.find(1000);
@@ -277,7 +277,7 @@ public class TestInsertionBidirectionnelle extends AbstractTransactionalTestNGSp
 	}
 	
 	@Test
-	public void TestSuppressionOfTravailleurInEmployeurResultsInTravailleurDeletion(){
+	public void testSuppressionOfTravailleurInEmployeurResultsInTravailleurDeletion(){
 		executeSqlScript("bidirectionnel/test-script.sql", false);
 		
 		Employeur e = employeurDao.find(1000);

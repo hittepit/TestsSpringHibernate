@@ -7,11 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -117,6 +122,8 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	 */
 	@Test
 	public void testRequestOnNonIdColumnFiresAFlush(){
+		FlushMode fm = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.AUTO); //Garantit le flush mode
 		Person p = dao.find(1000);
 		p.setName("toto");
 		Dummy d = dao.findDummy(1000);
@@ -127,6 +134,80 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		assertEquals(mockFlushEntityListener.getInvocation(),2,"Flush made because could be necessary");	
 		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),2,"Toutes les entités dirty sont flushées");
 		assertEquals(ps.size(),1,"Evidemment");
+		sessionFactory.getCurrentSession().setFlushMode(fm);
+	}
+	
+	/**
+	 * <p>Par rapport au test précédent, la transaction est readonly=true et le FlushMode est en MANUAL. 
+	 * Le flush n'est pas fait par hasard dans ce cas.</p>
+	 * <p>Cela peut paraître dangereux, car comme le montre le test, les résultats de la dernière requête ne sont
+	 * pas cohérent par rapport au model (où le nom a été changé en 'toto', mais d'un autre côté, il n'y a aucune raison
+	 * de modifier les entités dans une transaction readonly. On peut donc difficilement parler d'incohérence...</p>
+	 */
+	@Test
+	@Transactional(readOnly=true)
+	public void testRequestOnNonIdColumnDoesNotFireAFlushIsTransactionReadonly(){
+		assertEquals(sessionFactory.getCurrentSession().getFlushMode(), FlushMode.MANUAL, "MANUAL à cause de la transaction readonly");
+		Person p = dao.find(1000);
+		p.setName("toto");
+		Dummy d = dao.findDummy(1000);
+		d.setName("ggggg");
+
+		List<Person> ps = dao.findByName("toto");
+		assertEquals(mockSessionFlushListener.getInvocation(),0,"No global flush");
+		assertEquals(mockFlushEntityListener.getInvocation(),0,"No Flush at all (we're on manual)");	
+		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),0,"Rien, puisque la modification n'a pas été flushéee...");
+		assertEquals(ps.size(),0,"Pas si évident que ça, mais comme rien n'a été flushé");
+	}
+
+	/**
+	 * Par contre, même si la transaction est reaonly, un flush provoquera l'écriture. Moralité: ne pas appeler flush
+	 * si la transaction est readonly.
+	 */
+	@Test
+	@Transactional(readOnly=true)
+	public void testUpdateIsMadeIfFlushIsFiredEvenIfTransactionIsReadonly(){
+		assertEquals(sessionFactory.getCurrentSession().getFlushMode(), FlushMode.MANUAL, "MANUAL à cause de la transaction readonly");
+		Person p = dao.find(1000);
+		p.setName("toto");
+		sessionFactory.getCurrentSession().flush();
+		
+		assertEquals(mockSessionFlushListener.getInvocation(),1,"Flush was fired");
+		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),1000);
+		assertEquals(persons.size(),1);
+		assertEquals(persons.get(0).getName(),"toto","Entity has been updated");
+	}
+	
+	/**
+	 * Le commit d'une transaction provoque un flush (si le FlushMode est en AUTO)
+	 */
+	@Test
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public void testCommitTransactionFlushes(){
+		Session session = sessionFactory.getCurrentSession();
+		Transaction t = session.beginTransaction();
+		Person p = (Person) session.get(Person.class, 1000);
+		p.setName("toto");
+		t.commit();
+		assertEquals(mockSessionFlushListener.getInvocation(),1,"Flush was asked");
+		assertEquals(mockFlushEntityListener.getInvocation(),1,"Yep");	
+		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),1,"Une entité flushée");
+	}
+	
+	/**
+	 * Le rollback d'une transaction ne provoque pas de flush
+	 */
+	@Test
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public void testRollbackTransactionDoesNotFlush(){
+		Session session = sessionFactory.getCurrentSession();
+		Transaction t = session.beginTransaction();
+		Person p = (Person) session.get(Person.class, 1000);
+		p.setName("toto");
+		t.rollback();
+		assertEquals(mockSessionFlushListener.getInvocation(),0);
+		assertEquals(mockFlushEntityListener.getInvocation(),0);	
+		assertEquals(mockFlushEntityListener.getEntityClassFlushed().size(),0);
 	}
 
 	/**
