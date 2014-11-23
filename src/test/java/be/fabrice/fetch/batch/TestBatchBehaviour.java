@@ -38,9 +38,21 @@ public class TestBatchBehaviour extends TransactionalTestBase{
 			}
 		}
 		
+		Builder insertOwnerBuilder = insertInto("OW").columns("ID","NAME");
+		Builder insertCatBuilder = insertInto("CAT").columns("ID","NAME","OW_ID");
+		
+		for(int i=1;i <= 3; i++){
+			insertOwnerBuilder = insertOwnerBuilder.values(i,"Owner"+i);
+			for(int j=1; j<=5; j++){
+				insertCatBuilder = insertCatBuilder.values(i*10+j,"Cat"+(i*10+j),i);
+			}
+		}
+		
 		Operation operation = sequenceOf(insertGroupsBuilder.build(),
 				insertBatchBuilder.build(),
-				insertNoBatchBuilder.build());
+				insertNoBatchBuilder.build(),
+				insertOwnerBuilder.build(),
+				insertCatBuilder.build());
 		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operation);
         dbSetup.launch();
 	}
@@ -89,6 +101,31 @@ public class TestBatchBehaviour extends TransactionalTestBase{
 			if(Hibernate.isInitialized(g.getBatchs())) numberOfInit++;
 		}
 		assertEquals(numberOfInit, 3, "Batch size collections initialisées");
+	}
+	
+	@Test
+	public void batchLazyLoadOnManyToOneMustLoadMultipleLazyProperties(){
+		List<Cat> cats = getSession().createQuery("from Cat").list();
+		
+		assertEquals(cats.size(),15);
+		int numberOfInit = 0;
+		
+		for(Cat c:cats){
+			if(Hibernate.isInitialized(c.getOwner())) numberOfInit++;
+		}
+		
+		assertEquals(numberOfInit,0, "Rien n'est intialisé");
+		
+		cats.get(0).getOwner().getName(); //Initialize 1 cat's owner
+		
+		numberOfInit = 0;
+		
+		for(Cat c:cats){
+			if(Hibernate.isInitialized(c.getOwner())) numberOfInit++;
+		}
+		
+		assertEquals(numberOfInit,5, "5 chats ont été initialisés");
+
 	}
 	
 	@AfterClass
