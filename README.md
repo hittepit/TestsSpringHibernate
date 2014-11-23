@@ -46,6 +46,8 @@ Petit projet utile à des fins de démonstration.
 	+ Test d'un intercepteur
 	+ Démonstration de l'initilisation lazy de propriétés associées à une entité
 	+ Utilisation des propriétés lazy loadées et des listeners pour ajouter de la traçabilité
+	+ Utilisation de batch-size pour le lazy-loading
+		- chargement de collections (limiter le problème du N+1 select)
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
@@ -66,6 +68,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	+ dirty checking
 		- quand il y a flush
 		- pas d'update si immutable...
+	+ batch size -> est-ce que le cache de second niveau est touché? (à faire dans Utilisation du cache de second niveau)
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>

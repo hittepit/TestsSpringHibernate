@@ -1,5 +1,7 @@
 package be.fabrice.utils;
 
+import javax.sql.DataSource;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,11 @@ public class TransactionalTestBase extends AbstractTransactionalTestNGSpringCont
 	@Autowired
 	protected SessionFactory sessionFactory;
 	
+	@Autowired
+	protected DataSource dataSource;
+	
 	public Session getSession(){
 		return sessionFactory.getCurrentSession();
 	}
+
 }
