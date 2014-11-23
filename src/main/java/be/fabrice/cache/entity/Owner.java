@@ -1,4 +1,4 @@
-package be.fabrice.fetch.batch;
+package be.fabrice.cache.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,13 +6,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
-@Table(name="B")
-public class Batch {
+@Table(name="OW")
+@BatchSize(size=5)
+@Cache(region="OWNER",usage=CacheConcurrencyStrategy.READ_ONLY)
+public class Owner {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	public Integer id;
-	public String name;
+	private Integer id;
+	private String name;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -25,5 +32,4 @@ public class Batch {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

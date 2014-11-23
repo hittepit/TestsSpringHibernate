@@ -27,6 +27,7 @@ Petit projet utile à des fins de démonstration.
 	+ Fonctionnement des transactions nestées (REQUIRES_NEW)
 	+ Utilisation du cache de second niveau
 		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
+		- Le cache fonctionne aussi avec les références lazy-loadées, mais le batch fetch ne fonctionne plus alors
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
 	+ Utilisation de lazy 
@@ -73,7 +74,6 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 		- sur collections
 		- sur requêtes 
 		- avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
-	+ batch size -> est-ce que le cache de second niveau est touché dans le cas d'un many to one (lazy loading d'une entité? (à faire dans Utilisation du cache de second niveau)
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
