@@ -29,6 +29,7 @@ Petit projet utile à des fins de démonstration.
 		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
 		- Le cache fonctionne aussi avec les références lazy-loadées, mais le batch fetch ne fonctionne plus alors
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
+		- Cache 2nd level pour les collections
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
 	+ Utilisation de lazy 
 		- type réel d'une List lazyloadée
@@ -71,7 +72,6 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 		- quand il y a flush
 		- pas d'update si immutable...
 	+ cache de second niveau
-		- sur collections
 		- sur requêtes 
 		- avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
 
