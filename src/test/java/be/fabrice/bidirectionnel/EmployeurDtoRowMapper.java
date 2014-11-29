@@ -1,4 +1,4 @@
-package be.fabrice.bidirectionnel.dao;
+package be.fabrice.bidirectionnel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,5 +1,8 @@
-package be.fabrice.bidirectionnel.dao;
+package be.fabrice.bidirectionnel;
 
+import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
+import static com.ninja_squad.dbsetup.Operations.insertInto;
+import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -10,12 +13,14 @@ import java.util.List;
 
 import org.hibernate.ObjectDeletedException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import be.fabrice.bidirectionnel.Employeur;
-import be.fabrice.bidirectionnel.Travailleur;
 import be.fabrice.utils.TransactionalTestBase;
+
+import com.ninja_squad.dbsetup.DbSetup;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
+import com.ninja_squad.dbsetup.operation.Operation;
 
 /**
  * L'objectif de ces tests est de montrer certains problème qui peuvent subvenir lorsque le modèle n'est
@@ -25,31 +30,46 @@ import be.fabrice.utils.TransactionalTestBase;
  *
  */
 @ContextConfiguration(locations="classpath:bidirectionnel/test-bidirectionnel-spring.xml")
-@Test(description="Insertion avec des relations bidirectionnelles incohérentes",
-		testName="Insertion de relations bidirectionnelles incohérentes",
+@Test(description="Manipulation de relations bidirectionnelles incohérentes",
+		testName="Manipulation de relations bidirectionnelles incohérentes",
 		suiteName="Relations bidirectionnelles")
 public class TestInsertionBidirectionnelleIncoherente extends TransactionalTestBase {
 	
-	@Test
+	@BeforeMethod
+	public void initTestData(){
+		Operation operations = sequenceOf(
+				deleteAllFrom("TRAV","EMP"),
+				insertInto("EMP").columns("ID","NOM").values(1000,"Anybody").build(),
+				insertInto("TRAV").columns("ID","NOM","EMP_ID")
+					.values(1001,"Happy one",1000)
+					.values(1002,"Sad one",1000)
+					.build()
+		);
+		
+		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operations);
+		dbSetup.launch();
+	}
+	
+	@Test(description="Une relation entre deux nouveaux objets, établie seulement du coté many-to-one doit rester incohérente quand Hibernate la sauve")
 	public void testInsertOfEmployeurInsertTravailleurIfTravailleurIncoherentButTravailleurRemainsIncoherent(){
 		Employeur e = new Employeur();
 		e.setName("test");
-		final Travailleur t = new Travailleur();
+		Travailleur t = new Travailleur();
 		t.setNom("toto");
-		List<Travailleur> ts = new ArrayList<Travailleur>(){
-			{add(t);}
-		};
-		e.setTravailleurs(ts);
+		List<Travailleur> ts = new ArrayList<Travailleur>();
+		ts.add(t);
+		
+		e.setTravailleurs(ts); // Travailleur attaché à l'employeur, mais pas l'inverse
 		
 		getSession().saveOrUpdate(e);
 		
-		assertEquals(countRowsInTable("EMP"),1);
-		assertEquals(countRowsInTable("TRAV"),1);
+		assertEquals(countRowsInTable("EMP"),2);
+		assertEquals(countRowsInTable("TRAV"),3);
 		
-		assertNull(t.getEmployeur());
+		assertNull(t.getEmployeur(), "La relation du travailleur vers l'exmployeur n'existe toujours pas");
 	}
 	
-	@Test
+	@Test(description= "Une relation entre eux nouveaux objets, établie seulement du côté many-to-one doit rester incohérente quand Hibernate la sauve")
 	public void testInsertOfBothInsertBothIfEmployeurIncoherentButEmployeurRemainsIncoherent(){
 		Employeur e = new Employeur();
 		e.setName("test");
@@ -60,16 +80,14 @@ public class TestInsertionBidirectionnelleIncoherente extends TransactionalTestB
 		getSession().saveOrUpdate(e);
 		getSession().saveOrUpdate(t);
 		
-		assertEquals(countRowsInTable("EMP"),1);
-		assertEquals(countRowsInTable("TRAV"),1);
+		assertEquals(countRowsInTable("EMP"),2);
+		assertEquals(countRowsInTable("TRAV"),3);
 		
 		assertNull(e.getTravailleurs());
 	}
 	
-	@Test
+	@Test(description= "Une relation établie seulement du côté many-to-one doit rester incohérente quand Hibernate la sauve")
 	public void testInsertNewTravailleurForExistingEmployeurDoesnotUpdateEmployeur(){
-		executeSqlScript("bidirectionnel/test-script.sql", false);
-		
 		Employeur e = (Employeur) getSession().get(Employeur.class,1000);
 		assertEquals(e.getTravailleurs().size(),2,"Come on... The script said 2 travailleurs...");
 		
@@ -86,8 +104,6 @@ public class TestInsertionBidirectionnelleIncoherente extends TransactionalTestB
 	
 	@Test
 	public void testSaveExistingEmployeurWhenIncoherentNewTravailleurDoesNotCreateAnything(){
-		executeSqlScript("bidirectionnel/test-script.sql", false);
-		
 		Employeur e = (Employeur) getSession().get(Employeur.class,1000);
 		assertEquals(e.getTravailleurs().size(),2,"Come on... The script said 2 travailleurs...");
 		
@@ -105,8 +121,6 @@ public class TestInsertionBidirectionnelleIncoherente extends TransactionalTestB
 	
 	@Test
 	public void testIncoherentSuppressionWillThrowException() {
-		executeSqlScript("bidirectionnel/test-script.sql", false);
-		
 		Employeur e = (Employeur) getSession().get(Employeur.class,1000);
 		//Si laissé en lazy, ça pourrait fonctionner, mais il est difficile de savoir si la liste a été initialisée ou non.
 		//Ici, on l'initialise

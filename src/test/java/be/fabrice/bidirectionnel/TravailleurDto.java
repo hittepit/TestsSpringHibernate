@@ -1,4 +1,4 @@
-package be.fabrice.bidirectionnel.dao;
+package be.fabrice.bidirectionnel;
 
 import be.fabrice.bidirectionnel.Employeur;
 
