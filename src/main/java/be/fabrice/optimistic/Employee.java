@@ -1,4 +1,4 @@
-package be.fabrice.optimistic.entity;
+package be.fabrice.optimistic;
 
 import java.sql.Timestamp;
 

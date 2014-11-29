@@ -1,4 +1,4 @@
-package be.fabrice.bidirectionnel.entity;
+package be.fabrice.bidirectionnel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

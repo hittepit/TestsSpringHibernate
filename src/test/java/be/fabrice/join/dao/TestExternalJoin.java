@@ -24,7 +24,7 @@ public class TestExternalJoin extends AbstractTransactionalTestNGSpringContextTe
 	
 	@Test
 	public void testFindByCategory(){
-		List<Personne> ps = dao.findPersonneByTravailleurCategory("Employé");
+		List<Personne> ps = dao.findPersonneByTravailleurCategory("Employer");
 		
 		assertEquals(ps.size(), 1);
 	}

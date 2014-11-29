@@ -7,8 +7,6 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd" default-autowire="byName">
 
-	<context:component-scan base-package="be.fabrice.optimistic" />
-	
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
  	   <property name="driverClassName" value="org.h2.Driver" />
  	   <property name="username" value="h2" />
@@ -27,7 +25,7 @@
  			   hibernate.hbm2ddl.auto=create-drop
  		   </value>
  	   </property>
- 	   <property name="packagesToScan" value="be.fabrice.optimistic.entity" />
+ 	   <property name="packagesToScan" value="be.fabrice.optimistic" />
     </bean>
     
     <tx:annotation-driven transaction-manager="transactionManager" />

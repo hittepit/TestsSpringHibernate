@@ -55,6 +55,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	
 	@BeforeMethod
 	public void beforeMethod(){
+		deleteFromTables("PERSON","DUMMY");
 		mockSessionFlushListener.resetInvocation();
 		mockFlushEntityListener.resetInvocation();
 		executeSqlScript("flush/test-script.sql", false);

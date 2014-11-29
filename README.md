@@ -74,6 +74,9 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	+ cache de second niveau
 		- sur requêtes 
 		- avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
+	+ concurrence
+		- update d'une entité deleted (sans versioning)
+		- delete d'une entité deleted (sans versioning)
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
