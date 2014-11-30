@@ -14,6 +14,7 @@ import be.fabrice.inheritance.single.special.entity.ClassA;
 import be.fabrice.inheritance.single.special.entity.CommentA;
 import be.fabrice.utils.TransactionalTestBase;
 
+@Test(suiteName="Héritage", testName="Single table, cas particulier")
 @ContextConfiguration("classpath:inheritance/single/special/test-inheritance-spring.xml")
 public class TestSpecialInheritance extends TransactionalTestBase {
 	

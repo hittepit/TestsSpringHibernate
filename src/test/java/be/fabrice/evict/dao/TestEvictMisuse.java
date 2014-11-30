@@ -22,6 +22,7 @@ import be.fabrice.evict.entity.Chien;
  * @author fabrice.claes
  *
  */
+@Test(suiteName="Evict should be evicted",testName="Mauvaise utilisation de evict")
 @ContextConfiguration(locations="classpath:evict/test-evict-spring.xml")
 public class TestEvictMisuse extends AbstractTransactionalTestNGSpringContextTests {
 	@Autowired
