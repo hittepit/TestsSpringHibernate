@@ -1,16 +1,30 @@
 package be.fabrice.proxy;
 
+import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
+import static com.ninja_squad.dbsetup.Operations.insertInto;
+import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.sql.DataSource;
+
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.ninja_squad.dbsetup.DbSetup;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
+import com.ninja_squad.dbsetup.operation.Operation;
 
 import be.fabrice.utils.TransactionalTestBase;
 
@@ -44,80 +58,203 @@ import be.fabrice.utils.TransactionalTestBase;
  */
 @ContextConfiguration(locations="classpath:proxy/test-proxy-spring.xml")
 public class TestProxy extends TransactionalTestBase {
+	@Autowired
+	private DataSource dataSource;
+	
 	@BeforeMethod
 	public void beforeTest(){
 		executeSqlScript("proxy/test-script.sql", false);
+		
+		Operation deletes = deleteAllFrom("OWGC","OWING");
+		Operation owgc = insertInto("OWGC").columns("ID","NAME")
+				.values(1000,"test")
+				.values(1001,"test2")
+				.build();
+		Operation owing = insertInto("OWING").columns("ID","NAME")
+				.values(1000,"test")
+				.values(1001,"test2")
+				.build();
+		
+		Operation operation = sequenceOf(deletes,owgc,owing);
+		
+		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operation);
+		dbSetup.launch();
+	}
+	
+	@Test
+	public void loadMustLoadAProxyIfEntityWasNotLoadedYet(){
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+	}
+	
+	@Test
+	public void loadMustLoadAnEntityIfEntityWasLoadedBefore(){
+		ObjectWithGetClass o1 = (ObjectWithGetClass) getSession().get(ObjectWithGetClass.class, 1000);
+		assertTrue(Hibernate.isInitialized(o1), "It's not a proxy indeed");
+		ObjectWithGetClass o2 = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertTrue(Hibernate.isInitialized(o2));
+		assertSame(o2, o1, "It's the same object");
+	}
+	
+	public void listMustNotContaintProxyIfPromyxWasLoadedBefore(){
+		
+	}
+	
+	public void listMayContainProxyIfProxyWasLoadedBefore(){
+		
+	}
+	
+	@Test
+	public void callOfGetterMustInitalizeTheProxy(){
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		o.getName();
+		assertTrue(Hibernate.isInitialized(o));
+	}
+
+	@Test
+	public void callOfEqualsMustInitializeTheProxy(){
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		o.equals(null);
+		assertTrue(Hibernate.isInitialized(o));
+	}
+	
+	
+	//TODO tester les résultats des invokes
+	
+	@Test
+	public void reflexiveInvocationOfPublicMethodOfTheProxyMustInitializeTheProxy() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		Method m = o.getClass().getMethod("getName", new Class[]{});
+		m.invoke(o, new Object[]{});
+		assertTrue(Hibernate.isInitialized(o));
+
+	}
+	
+	@Test
+	public void reflexiveInvocationOfPublicMethodOfTheBaseClassMustInitializeTheProxy() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		Method m = ObjectWithGetClass.class.getMethod("getName", new Class[]{});
+		m.invoke(o, new Object[]{});
+		assertTrue(Hibernate.isInitialized(o));
+	}
+	
+	@Test(expectedExceptions=NoSuchMethodException.class)
+	public void privateMethodDoesNotExistInTheProxyClass() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		o.getClass().getDeclaredMethod("getNameInPrivate", new Class[]{});
+	}
+	
+	@Test
+	public void privateMethodOfTheBaseClassDoesNotInitializeTheProxy() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		Method m = ObjectWithGetClass.class.getDeclaredMethod("getNameInPrivate", new Class[]{});
+		m.setAccessible(true);
+		assertNull(m.invoke(o, new Object[]{}));
+		assertFalse(Hibernate.isInitialized(o));
+		m.setAccessible(false);
 	}
 	
 	/**
-	 * Ce test montre que le equals ne fonctionne pas, alors que le nom est le même. En fait, t.getEmployeur renvoie un
-	 * proxy et le getClass sur le proxy n'est pas le même que le getClass sur la classe {@link Employeur}.
+	 * <p>Ce test montre que le equals ne fonctionne pas, car la méthode equals est définie avec une comparaison de classe.
+	 * <em>if (getClass() != obj.getClass())</em>
+	 * Le premier getClass retourne {@link ObjectWithGetClass}, le deuxième retourne la classe du proxy</p>
+	 * 
+	 * <p>En fait, c'est même pire que ça comme le montre un futur test.</p>
 	 */
 	@Test
-	public void testEqualsWithClassEqualityDoesNotWorkWithProxies(){
-		Employeur employeurNotManaged = new Employeur();
-		employeurNotManaged.setId(1000);
-		employeurNotManaged.setName("Anybody");
+	public void equalsWithGetClassEqualityMustReturnFalseWhenProxyIsOnTheRightSide(){
+		ObjectWithGetClass referenceObject = new ObjectWithGetClass();
+		referenceObject.setId(1000);
+		referenceObject.setName("test");
 		
-		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(referenceObject.equals(o));
+	}
+
+	/**
+	 * <p>Le plus étrange, c'est qu'un objet n'est pas égal à un proxy (dans le cas d'un equals avec getClass)
+	 * mais que le proxy est égal à l'objet. Ce qui est une violation du principe de commutativité de l'égalité.</p>
+	 * <p>Dans le deuxième cas, la méthode equals est celle de {@link ObjectWithGetClass} et donc this.getClass() ne
+	 * retourne plus le proxy, mais {@link ObjectWithGetClass}</p>
+	 * <p>Cependant, le deuxème equals, appelé sur le proxy, l'initialise...</p>
+	 */
+	@Test
+	public void equalsCommutativityWithOneProxyMustBeBrokenWhenImplementedWithGetClass(){
+		ObjectWithGetClass referenceObject = new ObjectWithGetClass();
+		referenceObject.setId(1000);
+		referenceObject.setName("test");
 		
-		assertNotEquals(t.getEmployeur(), employeurNotManaged);
-		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
-		assertEquals(t.getEmployeur().getId(), employeurNotManaged.getId());
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		assertFalse(referenceObject.equals(o));
+		assertFalse(Hibernate.isInitialized(o)," Not Initialized");
+		assertTrue(o.equals(referenceObject), "Wierd but using the equals of ObjectWithClass");
+		assertTrue(Hibernate.isInitialized(o), "Initialized!");
+	}
+
+	/**
+	 * Le fait d'initialiser le proxy avant le equals ne change rien car la classes du proxy est toujours différente de la classe
+	 * de l'objet de référence.
+	 */
+	@Test
+	public void equalsCommutativityWithOneInitializedMustBeBrokenWhenImplementedWithGetClass(){
+		ObjectWithGetClass referenceObject = new ObjectWithGetClass();
+		referenceObject.setId(1000);
+		referenceObject.setName("test");
+		
+		ObjectWithGetClass o = (ObjectWithGetClass) getSession().load(ObjectWithGetClass.class, 1000);
+		Hibernate.initialize(o);
+		assertFalse(referenceObject.equals(o));
+		assertTrue(o.equals(referenceObject), "Wierd but using the equals of ObjectWithClass");
+		
 	}
 	
 	/**
-	 * Test équivalent à testEqualsWithClassEqualityDoesNotWorkWithProxies sauf que le proxy est initialisé
-	 * avant de vérifier l'égalité. L'initialisation n'a donc aucun impact positif sur ce type de equals.
+	 * <p>Ce test montre que le equals ne fonctionne pas, même avec un instanceOf, car la méthode equals 
+	 * compare directement les propriétés et comme le proxy n'est pas initialisé, elles valent null</p>
+	 * <p>Attention aux passages en debug car il peuvent initialiser des proxies. Quelque chose qui ne fonctionne
+	 * pas en exécution normale peut subitement fonctionner (en tout cas fonctionner différemment) lorsqu'on
+	 * passe en debu. </p>
 	 */
 	@Test
-	public void testEqualsWithClassEqualityDoesNotWorkWithProxiesEvenIfInitialized(){
-		Employeur employeurNotManaged = new Employeur();
-		employeurNotManaged.setId(1000);
-		employeurNotManaged.setName("Anybody");
+	public void equalsWithInstanceOfButNoGetterMustReturnFalseWhenProxyIsOnTheRightSide(){
+		ObjectWithInstanceOfButNotGetter referenceObject = new ObjectWithInstanceOfButNotGetter();
+		referenceObject.setId(1000);
+		referenceObject.setName("test");
 		
-		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
-		
-		assertEquals(t.getEmployeur().getName(), employeurNotManaged.getName());
-		assertEquals(t.getEmployeur().getId(), employeurNotManaged.getId());
-		assertNotEquals(t.getEmployeur(), employeurNotManaged);
+		ObjectWithInstanceOfButNotGetter o = (ObjectWithInstanceOfButNotGetter) getSession().load(ObjectWithInstanceOfButNotGetter.class, 1000);
+		assertFalse(referenceObject.equals(o));
 	}
 	
 	/**
-	 * Ce test montre que le equals ne fonctionne pas, même si la comparaison des classes se fait avec un
-	 * instanceof. En fait, le this.name utilisé dans le equals ou le this est le proxy renvoie null, ce qui
-	 * n'est pas égal à "Anybody else".
+	 * <p>L'égalité n'est toujours pas commutative, mais la raison est un peu différente.</p>
+	 * <p>Pour le premier equals, les propriétés du proxy sont bien à null, d'où le résultat incorrect.</p>
+	 * <p>Dans le deuxième equals, comme on accède à une méthode du proxy, il est initialisé et donc les propriétés
+	 * ne sont plus nulles.</p>
 	 */
 	@Test
-	public void testEqualsWithAccessToPropertiesDoesNotWorkWithProxies(){
-		EmployeurPresqueCorrect employeurNotManaged = new EmployeurPresqueCorrect();
-		employeurNotManaged.setId(1001);
-		employeurNotManaged.setName("Anybody else");
+	public void equalsCommutativityWithOneProxyMustBeBrokenWhenImplementedWithInstanceOfAndNoGetter(){
+		ObjectWithInstanceOfButNotGetter referenceObject = new ObjectWithInstanceOfButNotGetter();
+		referenceObject.setId(1000);
+		referenceObject.setName("test");
 		
-		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
-		
-		assertNotEquals(t.getEmployeurPresqueCorrect(), employeurNotManaged);
-		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
-		assertEquals(t.getEmployeurPresqueCorrect().getId(), employeurNotManaged.getId());
+		ObjectWithInstanceOfButNotGetter o = (ObjectWithInstanceOfButNotGetter) getSession().load(ObjectWithInstanceOfButNotGetter.class, 1000);
+		assertFalse(Hibernate.isInitialized(o));
+		assertFalse(referenceObject.equals(o));
+		assertFalse(Hibernate.isInitialized(o),"Not initialized yet");
+		assertTrue(o.equals(referenceObject));
+		assertTrue(Hibernate.isInitialized(o), "Initialized!!!");
 	}
+
+	//TODO montrer que le fait d'initialiser le proxy ne change rien dans ce type d'égalité
 	
-	/**
-	 * Par rapport à testEqualsWithAccessToPropertiesDoesNotWorkWithProxies, ce test initialise le proxy avant
-	 * de tester le equals, ce qui n'arrange rien.
-	 */
-	@Test
-	public void testEqualsWithAccessToPropertiesDoesNotWorkWithProxiesEvenIfInitialized(){
-		EmployeurPresqueCorrect employeurNotManaged = new EmployeurPresqueCorrect();
-		employeurNotManaged.setId(1001);
-		employeurNotManaged.setName("Anybody else");
-		
-		Travailleur t = (Travailleur) getSession().get(Travailleur.class,1001);
-		
-		assertEquals(t.getEmployeurPresqueCorrect().getName(), employeurNotManaged.getName());
-		assertEquals(t.getEmployeurPresqueCorrect().getId(), employeurNotManaged.getId());
-		assertNotEquals(t.getEmployeurPresqueCorrect(), employeurNotManaged);
-	}
-	
+	//TODO corriger le reste
 	/**
 	 * Cette fois l'implémentation du equals utilise un instanceof et passe par un getName() plutôt
 	 * qu'un accès direct à name. Le equals fonctionne correctement.
