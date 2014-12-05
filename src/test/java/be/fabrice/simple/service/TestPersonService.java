@@ -1,6 +1,7 @@
 package be.fabrice.simple.service;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,11 +31,31 @@ public class TestPersonService {
 	@Mock
 	private PersonDao mockPersonDao;
 	
-	@InjectMocks private PersonService sut = new PersonServiceImpl();
+	@InjectMocks private PersonService sut;
+	
+	@Captor
+	private ArgumentCaptor<String> stringArgumentCaptor;
 	
 	@BeforeMethod
 	public void beforeMethod(){
+		sut = new PersonServiceImpl();
 		MockitoAnnotations.initMocks(this);
+	}
+	
+	/**
+	 * <p>Ce test vérifie que pour remplir son contrat, le service demande au dao de retrouver les personnes dont le nom
+	 * est celui recherché.</p>
+	 * <p>Ce test peut être superflu car le test suivant signifie que cet appel a été fait.</p>
+	 * <p>Un autre reproche que l'on pourrait faire à ce test est sont côté "boîte plutôt blanche".</p>
+	 */
+	@Test
+	public void serviceMustCallDaoWhenInvoked(){
+		sut.countCharactersOccurenceInFirstnames("toto");
+		verify(mockPersonDao).findByLastname("toto"); //Pas important de vérifier combien de fois il l'a appelé.
+		
+		//Autre possibilité
+		verify(mockPersonDao).findByLastname(stringArgumentCaptor.capture());
+		assertEquals(stringArgumentCaptor.getValue(), "toto");
 	}
 
 	/**
