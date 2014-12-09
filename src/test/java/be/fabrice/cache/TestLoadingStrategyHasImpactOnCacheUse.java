@@ -30,6 +30,7 @@ import be.fabrice.cache.entity.Situation;
 import be.fabrice.cache.entity.Statut;
 import be.fabrice.utils.TransactionalTestBase;
 
+@Test(testName="Impact du lazy-loading sur l'efficacité du cache", suiteName="Cache de second niveau")
 @ContextConfiguration(locations="classpath:cache/test-cache-spring.xml")
 public class TestLoadingStrategyHasImpactOnCacheUse extends TransactionalTestBase {
 	private SecondLevelCacheStatistics etatStats;

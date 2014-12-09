@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import be.fabrice.bidirectionnel.manyToMany.dao.Dao;
 
+@Test(testName="Tests sur les relations many-to-many",suiteName="Relations many to many")
 @ContextConfiguration(locations="classpath:manyToMany/test-manyToMany-spring.xml")
 public class TestManyToManyRelation extends AbstractTransactionalTestNGSpringContextTests {
 	@Autowired

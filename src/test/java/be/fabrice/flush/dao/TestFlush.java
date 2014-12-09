@@ -36,6 +36,7 @@ import be.fabrice.flush.entity.Person;
  * @author fabrice.claes
  *
  */
+@Test(suiteName="Flush", testName="Quand ont lieu les flush")
 @ContextConfiguration("classpath:flush/test-flush-spring.xml")
 public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	private class PersonRowMapper implements RowMapper<Person>{

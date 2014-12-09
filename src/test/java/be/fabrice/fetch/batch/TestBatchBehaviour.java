@@ -4,7 +4,6 @@ import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
 import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
@@ -23,6 +22,7 @@ import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Insert.Builder;
 import com.ninja_squad.dbsetup.operation.Operation;
 
+@Test(suiteName="Batch fetching", testName="Fonctionnement du batch fetching")
 @ContextConfiguration(locations="classpath:fetch/batch/test-spring.xml")
 public class TestBatchBehaviour extends TransactionalTestBase{
 	@BeforeClass

@@ -18,6 +18,7 @@ import be.fabrice.inheritance.single.entity.Employeur;
 import be.fabrice.inheritance.single.entity.Societe;
 import be.fabrice.inheritance.single.entity.Travailleur;
 
+@Test(suiteName="Héritage", testName="Single table")
 @ContextConfiguration("classpath:inheritance/single/test-inheritance-spring.xml")
 public class TestInheritanceSingleTable extends AbstractTransactionalTestNGSpringContextTests{
 	@Autowired

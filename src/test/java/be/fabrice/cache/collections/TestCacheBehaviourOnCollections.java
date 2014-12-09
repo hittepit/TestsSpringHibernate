@@ -18,6 +18,7 @@ import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Insert.Builder;
 import com.ninja_squad.dbsetup.operation.Operation;
 
+@Test(testName="Fonctionnement du cache de 2d niveau sur les collections", suiteName="Cache de second niveau")
 @ContextConfiguration(locations="classpath:cache/collections/test-spring.xml")
 public class TestCacheBehaviourOnCollections extends TransactionalTestBase{
 	private SecondLevelCacheStatistics elementsCollectionCache;
