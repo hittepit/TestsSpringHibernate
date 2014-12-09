@@ -14,7 +14,7 @@ public class Person {
 	@Column(name="ID")
 	private Integer id;
 	
-	@Column(name="NOM")
+	@Column(name="NOM",unique=true)
 	private String name;
 
 	public Integer getId() {

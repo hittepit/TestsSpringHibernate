@@ -2,6 +2,8 @@ package be.fabrice.flush.dao;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +13,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,6 +76,60 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		dao.save(p);
 		assertEquals(mockSessionFlushListener.getInvocation(),0,"No flush was fired");
 		assertEquals(mockFlushEntityListener.getInvocation(),0,"No Specific Flush either");
+		assertNotNull(p.getId(),"But entity has been inserted");
+		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
+		assertEquals(persons.size(),1,"Entity has been inserted");
+	}
+	
+	@Test
+	public void insertMustNotFireFlushEvenWhenSomeEntitiesAreDirty(){
+		Person dirty = dao.find(1000);
+		dirty.setName("toto");
+		
+		Person p = new Person();
+		p.setName("test");
+		dao.save(p);
+		
+		assertEquals(mockSessionFlushListener.getInvocation(),0,"No flush was fired");
+		assertEquals(mockFlushEntityListener.getInvocation(),0,"No Specific Flush either");
+		assertNotNull(p.getId(),"But entity has been inserted");
+		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
+		assertEquals(persons.size(),1,"Entity has been inserted");
+	}
+	
+	@Test(expectedExceptions=ConstraintViolationException.class)
+	public void insertMustBePossibleEvenIfFutureFlushWillCauseConstraintViolationBecauseSomeEntitiesAreDirty(){
+		Person dirty = dao.find(1000);
+		dirty.setName("toto");
+		
+		Person p = new Person();
+		p.setName("toto");
+		dao.save(p); //Normalement, ne devrait pas être possible
+		
+		//Mais l'insertion ne déclenche pas de flush, donc la modification de l'entité dirty n'a pas encore transmise à la DB
+		
+		assertEquals(mockSessionFlushListener.getInvocation(),0,"No flush was fired");
+		assertEquals(mockFlushEntityListener.getInvocation(),0,"No Specific Flush either");
+		assertNotNull(p.getId(),"But entity has been inserted");
+		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
+		assertEquals(persons.size(),1,"Entity has been inserted");
+		
+		sessionFactory.getCurrentSession().flush(); //Flush dirty entities
+	}
+	
+	/**
+	 * Attention: même si la transaction est readonly, la sauvegarde d'une entité transiente persiste l'entité
+	 * car cette opération n'est pas liée au flush.
+	 * 
+	 * Cependant, ça pourrait être dépendant de la DB. DB2 n'accepte pas que la connexion soit mise en ReadOnly,
+	 * mais Postgres bien. Quid de H2.
+	 */
+	@Test
+	@Transactional(readOnly=true,propagation=Propagation.REQUIRES_NEW)
+	public void saveNewEntityDoesInsertInDatabaseEvenWhenTransactionIsReadonly(){
+		Person p = new Person();
+		p.setName("test");
+		sessionFactory.getCurrentSession().save(p);
 		assertNotNull(p.getId(),"But entity has been inserted");
 		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
 		assertEquals(persons.size(),1,"Entity has been inserted");
@@ -147,7 +204,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	 */
 	@Test
 	@Transactional(readOnly=true)
-	public void testRequestOnNonIdColumnDoesNotFireAFlushIsTransactionReadonly(){
+	public void requestOnNonIdColumnMustNotFireAFlushWhenIsTransactionReadonly(){
 		assertEquals(sessionFactory.getCurrentSession().getFlushMode(), FlushMode.MANUAL, "MANUAL à cause de la transaction readonly");
 		Person p = dao.find(1000);
 		p.setName("toto");
@@ -167,7 +224,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	 */
 	@Test
 	@Transactional(readOnly=true)
-	public void testUpdateIsMadeIfFlushIsFiredEvenIfTransactionIsReadonly(){
+	public void flushMustFireFlushEvenWhenTransactionIsReadonly(){
 		assertEquals(sessionFactory.getCurrentSession().getFlushMode(), FlushMode.MANUAL, "MANUAL à cause de la transaction readonly");
 		Person p = dao.find(1000);
 		p.setName("toto");
@@ -184,7 +241,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	 */
 	@Test
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
-	public void testCommitTransactionFlushes(){
+	public void commitMustFireFlushWhenInvokedOnTransaction(){
 		Session session = sessionFactory.getCurrentSession();
 		Transaction t = session.beginTransaction();
 		Person p = (Person) session.get(Person.class, 1000);
@@ -200,7 +257,7 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 	 */
 	@Test
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
-	public void testRollbackTransactionDoesNotFlush(){
+	public void rollbackTransactionMustNotFlushWhenInvokedOnTransaction(){
 		Session session = sessionFactory.getCurrentSession();
 		Transaction t = session.beginTransaction();
 		Person p = (Person) session.get(Person.class, 1000);

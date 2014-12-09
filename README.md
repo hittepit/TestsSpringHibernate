@@ -77,6 +77,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	+ concurrence
 		- update d'une entité deleted (sans versioning)
 		- delete d'une entité deleted (sans versioning)
+	+ question en cours sur be.fabrice.flush.dao.TestFlush
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
