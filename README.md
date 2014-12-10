@@ -69,14 +69,14 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	- [ ] utilisation de usertypes
 	- [ ] query cache
 	- [ ] dirty checking
-		- quand il y a flush
-		- pas d'update si immutable...
+		- [ ] quand il y a flush
+		- [ ] pas d'update si immutable...
 	- [ ] cache de second niveau
-		- sur requêtes 
-		- avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
+		- [ ] sur requêtes 
+		- [ ] avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
 	- [ ] concurrence
-		- update d'une entité deleted (sans versioning)
-		- delete d'une entité deleted (sans versioning)
+		- [ ] update d'une entité deleted (sans versioning)
+		- [ ] delete d'une entité deleted (sans versioning)
 	- [ ] question en cours sur be.fabrice.flush.dao.TestFlush
 
 * Resources 
