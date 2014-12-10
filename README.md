@@ -1,4 +1,11 @@
-Petit projet utile à des fins de démonstration.
+# Démonstration du fonctionnement d'Hibernate
+
+Ce projet est essentiellement composé de tests unitaires qui vérifient certains comportements d'Hibernate: fonctionnement
+du lazy-loading, du flush, du cache de second niveau...
+
+De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transactions.
+
+## Points abordés
 
 * Démonstration de tests unitaires de Dao (avec TestNg et Spring)
 
