@@ -62,8 +62,8 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	
 
 * TODO
-	+ proxies: hashcode (utilisation des getters)
-	+ TODO: héritage, les autres stratégies
+- [] proxies: hashcode (utilisation des getters)
+- [] TODO: héritage, les autres stratégies
 	+ Ajouter les commentaires sur les tests bidirectionnels
 	+ Commentaires sur ManyToOne
 	+ utilisation de usertypes
