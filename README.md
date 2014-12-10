@@ -63,23 +63,21 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 
 * TODO
 	- [ ] proxies: hashcode (utilisation des getters)
-	- [ ] TODO: héritage, les autres stratégies
-	
-* Old todos
-	+ Ajouter les commentaires sur les tests bidirectionnels
-	+ Commentaires sur ManyToOne
-	+ utilisation de usertypes
-	+ query cache
-	+ dirty checking
+	- [ ] héritage, les autres stratégies
+	- [ ] Ajouter les commentaires sur les tests bidirectionnels
+	- [ ] Commentaires sur ManyToOne
+	- [ ] utilisation de usertypes
+	- [ ] query cache
+	- [ ] dirty checking
 		- quand il y a flush
 		- pas d'update si immutable...
-	+ cache de second niveau
+	- [ ] cache de second niveau
 		- sur requêtes 
 		- avec un eager en fetch select (sur un manyToOne puisque cache hit en lazy)
-	+ concurrence
+	- [ ] concurrence
 		- update d'une entité deleted (sans versioning)
 		- delete d'une entité deleted (sans versioning)
-	+ question en cours sur be.fabrice.flush.dao.TestFlush
+	- [ ] question en cours sur be.fabrice.flush.dao.TestFlush
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
