@@ -69,6 +69,9 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	
 
 * TODO
+	- [ ] new transactions
+		- [ ] définitions
+		- [ ] problèmes de testing
 	- [ ] proxies: hashcode (utilisation des getters)
 	- [ ] héritage, les autres stratégies
 	- [ ] Ajouter les commentaires sur les tests bidirectionnels
