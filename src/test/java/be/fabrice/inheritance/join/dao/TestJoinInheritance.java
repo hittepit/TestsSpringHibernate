@@ -15,6 +15,7 @@ import be.fabrice.inheritance.join.entity.Boss;
 import be.fabrice.inheritance.join.entity.Employeur;
 import be.fabrice.inheritance.join.entity.EmployeurVo;
 
+@Test(suiteName="Héritage", testName="JOIN")
 @ContextConfiguration("classpath:inheritance/join/test-inheritance-spring.xml")
 public class TestJoinInheritance extends AbstractTransactionalTestNGSpringContextTests{
 	@Autowired
