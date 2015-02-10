@@ -1,0 +1,1 @@
+insert into item (id,name) values (100,'Test');

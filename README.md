@@ -31,7 +31,10 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 		- Join
 	+ Démonstration du flush
 	+ Démonstration d'une mauvaise utilisation de evict (lire les commentaires)
-	+ Fonctionnement des transactions nestées (REQUIRES_NEW)
+	+ Fonctionnement des transactions nestées 
+		+ REQUIRES_NEW
+		+ définitions alternatives
+		+ problèmes de testing
 	+ Utilisation du cache de second niveau
 		- Démonstration qu'une propriété lazy loadée peut donner un cache hit alors qu'une propriété eager loadée n'en donnera jamais
 		- Le cache fonctionne aussi avec les références lazy-loadées, mais le batch fetch ne fonctionne plus alors
@@ -69,9 +72,6 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	
 
 * TODO
-	- [ ] new transactions
-		- [ ] définitions
-		- [ ] problèmes de testing
 	- [ ] proxies: hashcode (utilisation des getters)
 	- [ ] héritage, les autres stratégies
 	- [ ] Ajouter les commentaires sur les tests bidirectionnels

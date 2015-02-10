@@ -20,10 +20,12 @@
  	   <property name="dataSource">
  		   <ref bean="dataSource" />
  	   </property>
+ 	   <property name="packagesToScan" value="be.fabrice.transaction" />
  	   <property name="hibernateProperties">
  		   <value>
  			   hibernate.dialect=org.hibernate.dialect.H2Dialect
  			   hibernate.show_sql=true
+ 			   hibernate.hbm2ddl.auto=create-drop
  		   </value>
  	   </property>
     </bean>
