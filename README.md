@@ -40,6 +40,7 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 		- Le cache fonctionne aussi avec les références lazy-loadées, mais le batch fetch ne fonctionne plus alors
 		- Fonctionnement des caches NONSTRICT_READ_WRITE
 		- Cache 2nd level pour les collections
+		- Query cache
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
 	+ Utilisation de lazy 
 		- type réel d'une List lazyloadée
@@ -77,7 +78,6 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	- [ ] Ajouter les commentaires sur les tests bidirectionnels
 	- [ ] Commentaires sur ManyToOne
 	- [ ] utilisation de usertypes
-	- [ ] query cache
 	- [ ] dirty checking
 		- [ ] quand il y a flush
 		- [ ] pas d'update si immutable...
