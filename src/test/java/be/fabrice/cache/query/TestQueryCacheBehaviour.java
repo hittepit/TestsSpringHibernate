@@ -4,6 +4,7 @@ import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,20 +99,6 @@ public class TestQueryCacheBehaviour extends TransactionalTestBase{
 		assertThat(sessionFactory.getStatistics().getQueryCacheHitCount()).isEqualTo(initialHits);
 	}
 	
-	@Test(description="only ids of the result must be cached")
-	public void only_ids_of_the_result_must_be_cached(){
-		getSession().createQuery("from Item i where i.name=:name")
-				.setParameter("name", "test")
-				.setCacheable(true)
-				.list();
-		
-		Map<?,?> regions = ((SessionFactoryImpl)sessionFactory).getAllSecondLevelCacheRegions();
-		Map<?,ArrayList<?>> content = ((Region)regions.get("org.hibernate.cache.StandardQueryCache")).toMap();
-		for(ArrayList<?> items: content.values()){
-			assertThat(items).contains(1L,2L,3L);
-		}
-	}
-	
 	@Test(description="different queries with same result must nor hit cache")
 	public void different_queries_with_same_result_must_nor_hit_cache(){
 		long initialHits = sessionFactory.getStatistics().getQueryCacheHitCount();
@@ -152,5 +139,34 @@ public class TestQueryCacheBehaviour extends TransactionalTestBase{
 		assertThat(items1).isEqualTo(items2); //Same content
 		
 		assertThat(sessionFactory.getStatistics().getQueryCacheHitCount()).isEqualTo(initialHits);
+	}
+	
+	@Test(description="only ids of the result must be cached")
+	public void only_ids_of_the_result_must_be_cached(){
+		getSession().createQuery("from Item i where i.name=:name")
+				.setParameter("name", "test")
+				.setCacheable(true)
+				.list();
+		
+		Map<?,?> regions = ((SessionFactoryImpl)sessionFactory).getAllSecondLevelCacheRegions();
+		Map<?,ArrayList<?>> content = ((Region)regions.get("org.hibernate.cache.StandardQueryCache")).toMap();
+		for(ArrayList<?> items: content.values()){
+			assertThat(items).contains(1L,2L,3L);
+		}
+	}
+	
+	@Test(description="tuple data must be cached when query is cached")
+	public void tuple_data_must_be_cached_when_query_is_cached(){
+		Session session = getSession();
+		session.createQuery("select i.id, i.name from Item i where i.status=:status")
+			.setParameter("status", true)
+			.setCacheable(true)
+			.list();
+		
+		Map<?,?> regions = ((SessionFactoryImpl)sessionFactory).getAllSecondLevelCacheRegions();
+		Map<?,ArrayList<?>> content = ((Region)regions.get("org.hibernate.cache.StandardQueryCache")).toMap();
+		for(ArrayList<?> items: content.values()){
+			assertThat(items).contains(new Object[]{new Serializable[]{1L,"test"},new Serializable[]{2L,"test"},new Serializable[]{3L,"test"}});
+		}
 	}
 }
