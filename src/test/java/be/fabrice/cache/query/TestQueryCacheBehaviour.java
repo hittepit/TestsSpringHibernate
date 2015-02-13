@@ -22,11 +22,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import be.fabrice.utils.TransactionalTestBase;
+import be.fabrice.utils.logging.SimpleSql;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 
+@Test(testName="Fonctionnement du cache de 2d niveau pour les queries", suiteName="Cache de second niveau")
 @ContextConfiguration(locations="classpath:cache/query/test-spring.xml")
 public class TestQueryCacheBehaviour extends TransactionalTestBase{
 	@Autowired
@@ -74,6 +76,41 @@ public class TestQueryCacheBehaviour extends TransactionalTestBase{
 		assertThat(sessionFactory.getStatistics().getQueryCacheHitCount()).isEqualTo(initialHits+1);		
 	}
 	
+	@Test(description="only ids of the result must be cached")
+	public void only_ids_of_the_result_must_be_cached(){
+		getSession().createQuery("from Item i where i.name=:name")
+				.setParameter("name", "test")
+				.setCacheable(true)
+				.list();
+		
+		Map<?,?> regions = ((SessionFactoryImpl)sessionFactory).getAllSecondLevelCacheRegions();
+		Map<?,ArrayList<?>> content = ((Region)regions.get("org.hibernate.cache.StandardQueryCache")).toMap();
+		for(ArrayList<?> items: content.values()){
+			assertThat(items).contains(1L,2L,3L);
+		}
+	}
+	
+	@Test(description="each entity is fetch separatly when query cache is hit")
+	public void each_entity_is_fetch_separatly_when_query_cache_is_hit(){
+		getSession().createQuery("from Item i where i.name=:name")
+				.setParameter("name", "test")
+				.setCacheable(true)
+				.list();
+		
+		SimpleSql.reinitSqlList();
+		
+		Session newSession = sessionFactory.openSession(); //No session hit
+		newSession.createQuery("from Item i where i.name=:name")
+			.setParameter("name", "test")
+			.setCacheable(true)
+			.list();
+
+		assertThat(SimpleSql.contains("select .* from Item .* where .*\\.id=1")).isTrue();
+		assertThat(SimpleSql.contains("select .* from Item .* where .*\\.id=2")).isTrue();
+		assertThat(SimpleSql.contains("select .* from Item .* where .*\\.id=3")).isTrue();
+		assertThat(SimpleSql.contains("select .* from Item .* where .*\\.id=4")).isFalse();
+	}
+	
 	@Test(description="cached query results will not be found in cache when second query does not define setCacheable")
 	public void cached_query_results_will_not_be_found_in_cache_when_second_query_does_not_define_setCacheable(){
 		long initialHits = sessionFactory.getStatistics().getQueryCacheHitCount();
@@ -99,8 +136,8 @@ public class TestQueryCacheBehaviour extends TransactionalTestBase{
 		assertThat(sessionFactory.getStatistics().getQueryCacheHitCount()).isEqualTo(initialHits);
 	}
 	
-	@Test(description="different queries with same result must nor hit cache")
-	public void different_queries_with_same_result_must_nor_hit_cache(){
+	@Test(description="different queries with same result must not hit cache")
+	public void different_queries_with_same_result_must_not_hit_cache(){
 		long initialHits = sessionFactory.getStatistics().getQueryCacheHitCount();
 		Session session = getSession();
 		List<Item> items1 = session.createQuery("from Item i where i.name=:name")
@@ -139,20 +176,6 @@ public class TestQueryCacheBehaviour extends TransactionalTestBase{
 		assertThat(items1).isEqualTo(items2); //Same content
 		
 		assertThat(sessionFactory.getStatistics().getQueryCacheHitCount()).isEqualTo(initialHits);
-	}
-	
-	@Test(description="only ids of the result must be cached")
-	public void only_ids_of_the_result_must_be_cached(){
-		getSession().createQuery("from Item i where i.name=:name")
-				.setParameter("name", "test")
-				.setCacheable(true)
-				.list();
-		
-		Map<?,?> regions = ((SessionFactoryImpl)sessionFactory).getAllSecondLevelCacheRegions();
-		Map<?,ArrayList<?>> content = ((Region)regions.get("org.hibernate.cache.StandardQueryCache")).toMap();
-		for(ArrayList<?> items: content.values()){
-			assertThat(items).contains(1L,2L,3L);
-		}
 	}
 	
 	@Test(description="tuple data must be cached when query is cached")
