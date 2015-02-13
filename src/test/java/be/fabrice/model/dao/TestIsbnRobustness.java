@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 import be.fabrice.model.entity.Isbn;
 
+@Test(suiteName="Modèles robustes", testName="Utilisation d'un Value Object", description="Test sur l'utilisation de modèles robustes avec Hibernate")
 public class TestIsbnRobustness {
 	@Test
 	public void testCorrectIsbn10(){

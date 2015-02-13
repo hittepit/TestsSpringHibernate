@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 
 import be.fabrice.model.entity.RectangleV1;
 
+@Test(suiteName="Modèles robustes", testName="Robustesse d'une entité", description="Test sur l'utilisation de modèles robustes avec Hibernate")
 public class TestRectangleRobustness {
 	@Test(expectedExceptions=IllegalArgumentException.class)
 	public void testImpossibleToCreateRectangleWithNegativeLongueur(){

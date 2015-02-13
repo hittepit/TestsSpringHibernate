@@ -18,6 +18,7 @@ import org.testng.annotations.Test;
 
 import be.fabrice.model.entity.RectangleV4;
 
+@Test(suiteName="Modèles robustes",testName="Persistence d'entités robustes", description="Test sur l'utilisation de modèles robustes avec Hibernate")
 @ContextConfiguration(locations = "classpath:model/test-model-spring.xml")
 public class TestRectangleV4Persistence extends AbstractTransactionalTestNGSpringContextTests {
 	class RectangleVo {

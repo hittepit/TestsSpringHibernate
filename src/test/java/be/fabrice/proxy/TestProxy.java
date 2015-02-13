@@ -56,6 +56,7 @@ import be.fabrice.utils.TransactionalTestBase;
  * @author fabrice.claes
  *
  */
+@Test(suiteName="Fonctionnement des proxies", testName="Tests sur proxy")
 @ContextConfiguration(locations="classpath:proxy/test-proxy-spring.xml")
 public class TestProxy extends TransactionalTestBase {
 	@Autowired

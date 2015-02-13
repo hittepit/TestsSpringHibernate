@@ -15,6 +15,7 @@ import be.fabrice.transformer.dao.Dao;
 import be.fabrice.transformer.entity.ProprieteVO;
 import be.fabrice.utils.TransactionalTestBase;
 
+@Test(description="Fonctionnement des ResultTransformer",suiteName="Result transformers",testName="Result transformers")
 @ContextConfiguration(locations="classpath:transformer/test-spring.xml")
 public class TestResultTransformer extends TransactionalTestBase{
 	@Autowired

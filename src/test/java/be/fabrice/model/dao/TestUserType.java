@@ -39,6 +39,7 @@ class BookVoMapper implements RowMapper<BookVo>{
 	
 }
 
+@Test(suiteName="Modèles robustes",testName="Utilisation des UserType",description="Test sur l'utilisation de modèles robustes avec Hibernate")
 @ContextConfiguration(locations="classpath:model/test-model-spring.xml")
 public class TestUserType extends AbstractTransactionalTestNGSpringContextTests{
 	@Autowired
