@@ -124,7 +124,7 @@ public class TestBatchBehaviour extends TransactionalTestBase{
 			if(Hibernate.isInitialized(c.getOwner())) numberOfInit++;
 		}
 		
-		assertEquals(numberOfInit,5, "5 chats ont été initialisés");
+		assertEquals(numberOfInit,5, "5 owners ont été initialisés");
 
 	}
 	

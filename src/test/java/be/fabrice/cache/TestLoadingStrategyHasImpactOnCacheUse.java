@@ -9,6 +9,7 @@ import static org.testng.Assert.assertNotNull;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.stat.SecondLevelCacheStatistics;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.AfterClass;
@@ -192,8 +193,31 @@ public class TestLoadingStrategyHasImpactOnCacheUse extends TransactionalTestBas
 		
 		assertEquals(numberOfInit,0, "Rien n'est intialisé");
 		
-		Hibernate.initialize(cats.get(0).getOwner()); //Initialize owner, but of the cache, does not batch...
+		Hibernate.initialize(cats.get(0).getOwner()); //Initialize owner, but from the cache, does not with batch...
 		
 		assertEquals(ownerStats.getHitCount(), initialHitsOnOwner+1, "Only one");
+	}
+	
+	@Test
+	public void lazyLoadedCachedRelationWillBeBatchFetched(){
+		((SessionFactoryImpl)sessionFactory).evict(Owner.class); //Clear cache for owner
+		
+		List<Cat> cats = getSession().createCriteria(Cat.class).list();
+		
+		int numberOfInit = 0;
+		
+		for(Cat c:cats){
+			if(Hibernate.isInitialized(c.getOwner())) numberOfInit++;
+		}
+		
+		assertEquals(numberOfInit,0, "Rien n'est intialisé");
+		
+		Hibernate.initialize(cats.get(0).getOwner());
+		
+		for(Cat c:cats){
+			if(Hibernate.isInitialized(c.getOwner())) numberOfInit++;
+		}
+		
+		assertEquals(numberOfInit,5, "5 owners ont été initialisés");
 	}
 }
