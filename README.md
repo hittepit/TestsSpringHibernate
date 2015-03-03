@@ -78,6 +78,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	- [ ] Ajouter les commentaires sur les tests bidirectionnels
 	- [ ] Commentaires sur ManyToOne
 	- [ ] utilisation de usertypes
+		- si une propriété usertype est dans une projection, c'est le type qu'on reçoit, pas le contenu de la colonne
 	- [ ] dirty checking
 		- [ ] quand il y a flush
 		- [ ] pas d'update si immutable...

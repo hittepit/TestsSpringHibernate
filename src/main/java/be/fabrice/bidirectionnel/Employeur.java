@@ -1,10 +1,12 @@
 package be.fabrice.bidirectionnel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,8 +26,8 @@ public class Employeur {
 	@Column(name="NOM")
 	private String name;
 	
-	@OneToMany(mappedBy="employeur",orphanRemoval=true)
-	@Cascade({CascadeType.SAVE_UPDATE})
+	@OneToMany(mappedBy="employeur", fetch=FetchType.EAGER, orphanRemoval=true)
+	@Cascade({CascadeType.ALL})
 	private List<Travailleur> travailleurs;
 
 	public Integer getId() {
@@ -58,6 +60,25 @@ public class Employeur {
 			this.travailleurs.remove(travailleur);
 			travailleur.setEmployeur(null);
 		}
+	}
+	/**
+	 * Mauvais, mais pour tester un développement fait par un développeur
+	 * @param s
+	 */
+	public void badMethodRemoveTravailleurWithName(String s){
+		List<Travailleur> ts = new ArrayList<Travailleur>();
+		Iterator<Travailleur> it = this.travailleurs.iterator();
+		while(it.hasNext()){
+			Travailleur t = (Travailleur) it.next();
+			if(! t.getNom().equals(s)){
+				ts.add(t);
+			} else {
+				t.setEmployeur(null);
+			}
+		}
+		
+		this.travailleurs.clear();
+		this.travailleurs.addAll(ts);
 	}
 	@Override
 	public int hashCode() {
