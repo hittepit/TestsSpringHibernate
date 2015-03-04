@@ -42,11 +42,33 @@ public class TestBadMethodBehaviour extends TransactionalTestBase {
 		
 		assertThat(e.getTravailleurs()).hasSize(2);
 		
-		e.badMethodRemoveTravailleurWithName("Happy one");
+		Travailleur newT = new Travailleur();
+		newT.setNom("Nouveau");
+		e.addTravailleur(newT);
 		
-		Travailleur t = (Travailleur) getSession().createQuery("from Travailleur t where t.nom = :name").setParameter("name", "Happy one").uniqueResult();
+		getSession().createQuery("from Employeur t where t.name = :name").setParameter("name", "None").uniqueResult();
+		
+		e.clearTravailleurs();
+		
+		getSession().flush();
+	}
 
-		assertThat(t).isNull();
-		assertThat(e.getTravailleurs()).hasSize(1);
+	@Test
+	public void testBetterMethod(){
+		Employeur e = (Employeur) getSession().get(Employeur.class, 1000);
+		
+		assertThat(e.getTravailleurs()).hasSize(2);
+		
+		Travailleur newT = new Travailleur();
+		newT.setNom("Nouveau");
+		e.addTravailleur(newT);
+		
+		getSession().save(newT);
+		
+		getSession().createQuery("from Employeur t where t.name = :name").setParameter("name", "None").uniqueResult();
+		
+		e.clearTravailleurs();
+		
+		getSession().flush();
 	}
 }

@@ -61,25 +61,14 @@ public class Employeur {
 			travailleur.setEmployeur(null);
 		}
 	}
-	/**
-	 * Mauvais, mais pour tester un développement fait par un développeur
-	 * @param s
-	 */
-	public void badMethodRemoveTravailleurWithName(String s){
-		List<Travailleur> ts = new ArrayList<Travailleur>();
-		Iterator<Travailleur> it = this.travailleurs.iterator();
-		while(it.hasNext()){
-			Travailleur t = (Travailleur) it.next();
-			if(! t.getNom().equals(s)){
-				ts.add(t);
-			} else {
-				t.setEmployeur(null);
-			}
+	
+	public void clearTravailleurs(){
+		for(Travailleur t:this.travailleurs){
+			t.setEmployeur(null);
 		}
-		
 		this.travailleurs.clear();
-		this.travailleurs.addAll(ts);
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

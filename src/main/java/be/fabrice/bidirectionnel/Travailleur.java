@@ -21,7 +21,7 @@ public class Travailleur {
 	private String nom;
 	
 	@ManyToOne
-	@JoinColumn(name="EMP_ID")
+	@JoinColumn(name="EMP_ID", nullable=false)
 	private Employeur employeur;
 	
 	public Integer getId() {
