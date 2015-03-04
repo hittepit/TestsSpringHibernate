@@ -17,10 +17,6 @@
 	
 	<logger name="org.apache.commons.dbcp" level="DEBUG" />
 
-	<logger name="p6spy" level="INFO">
-		<appender-ref ref="P6SPY-STDOUT" />
-	</logger>
-  
   <root>
 	<level value="ERROR" />
 	<appender-ref ref="STDOUT" />

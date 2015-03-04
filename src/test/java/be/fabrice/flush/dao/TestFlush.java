@@ -2,8 +2,6 @@ package be.fabrice.flush.dao;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +23,8 @@ import org.testng.annotations.Test;
 
 import be.fabrice.flush.entity.Dummy;
 import be.fabrice.flush.entity.Person;
+import be.fabrice.utils.MockFlushEntityListener;
+import be.fabrice.utils.MockSessionFlushListener;
 
 /**
  * <p>Le flush des entités de la session permet de persister les modifications faites sur les ntités vers la base de données.</p>

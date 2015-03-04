@@ -9,6 +9,10 @@
 
 	<context:component-scan base-package="be.fabrice.flush" />
 	
+	<bean id="mockFlushEntityListener" class="be.fabrice.utils.MockFlushEntityListener" />
+	
+	<bean id="mockSessionFlushListener" class="be.fabrice.utils.MockSessionFlushListener" />
+	
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
  	   <property name="driverClassName" value="org.h2.Driver" />
  	   <property name="username" value="h2" />
