@@ -21,7 +21,7 @@ public class SimpleSql implements MessageFormattingStrategy {
 	}
 	
 	public static boolean contains(String regex){
-		RegexValidator rev = new RegexValidator(regex);
+		RegexValidator rev = new RegexValidator(regex, false);
 		for(String sql:sqlList){
 			if(rev.isValid(sql)) return true;
 		}
