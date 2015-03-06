@@ -116,6 +116,62 @@ public class TestBadMethodBehaviour extends TransactionalTestBase {
 		getSession().flush(); //Force update DB -> exception
 	}
 	
+	@Test(expectedExceptions=PropertyValueException.class, 
+			description="hibernate does not make orphan delete of a new entity that was persisted by accidental flush then removed")
+	public void noOrphanDelete(){
+		Container c = (Container) getSession().get(Container.class, 1000);
+		
+		Item newItem = new Item();
+		newItem.setName("Nouveau");
+		c.addItem(newItem);
+
+		SimpleSql.reinitSqlList();
+		
+		//flush "accidentel"
+		getSession().createQuery("from Container t where t.name = :name").setParameter("name", "None").list();
+		
+		assertThat(newItem.getId()).isNotNull(); //A été persisté
+		assertThat(SimpleSql.contains("insert into item .*")).isTrue(); //Le preuve
+		
+		c.removeItem(newItem);
+		
+		assertThat(c.getItems()).hasSize(2); //Remove correct
+		assertThat(newItem.getContainer()).isNull();
+		
+		getSession().flush(); //Force update DB -> exception
+	}
+	
+	@Test(description="hibernate does not make orphan delete of a new entity but manual delete works")
+	public void manualDeleteOfAnOrphan(){
+		Container c = (Container) getSession().get(Container.class, 1000);
+
+		Item newItem = new Item();
+		newItem.setName("Nouveau");
+		c.addItem(newItem);
+		
+		SimpleSql.reinitSqlList();
+		
+		//flush "accidentel"
+		getSession().createQuery("from Container t where t.name = :name").setParameter("name", "None").list();
+		
+		assertThat(newItem.getId()).isNotNull(); //A été persisté
+		assertThat(SimpleSql.contains("insert into item .*")).isTrue(); //Le preuve
+		
+		c.removeItem(newItem);
+		
+		assertThat(c.getItems()).hasSize(2); //Remove correct
+		assertThat(newItem.getContainer()).isNull();
+		
+		SimpleSql.reinitSqlList();
+		
+		getSession().delete(newItem);
+		
+		getSession().flush(); //Force update DB -> exception
+		
+		assertThat(SimpleSql.contains("delete from item .*")).isTrue();
+		assertThat(SimpleSql.contains("update item .*")).isFalse();
+	}
+	
 	@Test(description="no orphan delete must be casted when new Item is added, persisted because accidental flush, then removed")
 	public void noOrphanDeleteWithAccidentalFlushOnModel2(){
 		Container2 c = (Container2) getSession().get(Container2.class, 1000);
