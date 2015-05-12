@@ -124,7 +124,7 @@ public class TestBadMethodBehaviour extends TransactionalTestBase {
 		Item newItem = new Item();
 		newItem.setName("Nouveau");
 		c.addItem(newItem);
-
+		
 		SimpleSql.reinitSqlList();
 		
 		//flush "accidentel"
@@ -166,7 +166,7 @@ public class TestBadMethodBehaviour extends TransactionalTestBase {
 		
 		getSession().delete(newItem);
 		
-		getSession().flush(); //Force update DB -> exception
+		getSession().flush(); //Force update DB -> plus d'exception
 		
 		assertThat(SimpleSql.contains("delete from item .*")).isTrue();
 		assertThat(SimpleSql.contains("update item .*")).isFalse();
