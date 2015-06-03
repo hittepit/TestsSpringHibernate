@@ -49,12 +49,20 @@ public class Container {
 		}
 	}
 	
+	/**
+	 * Retrait bidirectionnel de l'item.
+	 * 
+	 * @param item
+	 */
 	public void removeItem(Item item){
 		if(this.items != null && this.items.remove(item)){
 			item.setContainer(null);
 		}
 	}
 	
+	/**
+	 * Efface proprement tous les items du container en faisant un clear de la liste
+	 */
 	public void clearItems(){
 		if(items != null){
 			for(Item item:items){
@@ -65,12 +73,16 @@ public class Container {
 		items.clear();
 	}
 	
+	/**
+	 * Efface proprement tous les items du container en les retirant de la liste
+	 */
 	public void removeAllItems(){
 		if(items != null){
 			List<Item> its = new ArrayList<Item>(items);
 			for(Item it:its) removeItem(it);
 		}
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
