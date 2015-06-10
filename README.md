@@ -62,6 +62,8 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 	+ Utilisation de batch-size pour le lazy-loading
 		- chargement de collections (limiter le problème du N+1 select)
 		- chargement des toOne (Proxy)
+	+ Comparaison de requêtes
+		+ Les requêtes HQL avec ou sans projection, avec ou sans join, se comportent différemment.
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
@@ -89,6 +91,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 		- [ ] update d'une entité deleted (sans versioning)
 		- [ ] delete d'une entité deleted (sans versioning)
 	- [ ] question en cours sur be.fabrice.flush.dao.TestFlush
+	- [ ] comparaison des requêtes HQL sans join, avec join et criteria
 
 * Resources 
 	+ <http://docs.jboss.org/hibernate/orm/3.5/reference/en/html/>
