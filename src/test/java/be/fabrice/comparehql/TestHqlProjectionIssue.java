@@ -106,6 +106,29 @@ public class TestHqlProjectionIssue extends TransactionalTestBase{
 		assertThat(nombreAliases).isEqualTo(2);
 	}
 	
+	@Test
+	public void twoAliasesWhenIndirectProjectionIsUseInWhere2(){
+		List<String> names = new ArrayList<String>();
+		names.add("trav1");
+		List<Travailleur> travs = getSession()
+			.createQuery("select ta.travailleur from Tache ta "
+					+ "where ta.statut = :statut and "
+					+ "ta.travailleur.nom in (:names) "
+					+ "order by ta.travailleur.nom desc")
+			.setParameter("statut", "ENCOURS")
+			.setParameterList("names", names)
+			.list();
+		
+		assertThat(travs).hasSize(1);
+		
+		//Cependant...
+		List<String> sqlsWithTravailleur = extractSqlContaining(SimpleSql.getSqlList(), "travailleu");
+		int nombreAliases = extractAliases(sqlsWithTravailleur.get(0), "travailleu").size();
+		
+		//La requête a généré deux alias différents pour travailleur
+		assertThat(nombreAliases).isEqualTo(2);
+	}
+	
 	/**
 	 * <p>Lorsque la projection est une entité obtenue par navigation dans le graphe d'objet depuis
 	 * l'entité exprimée dans le From et que cette entité est utilisée directement ou indirectement
