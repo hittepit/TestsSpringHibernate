@@ -26,7 +26,7 @@
  			   <prop key="hibernate.generate_statistics">true</prop>
 			</props>
  	   </property>
- 	   <property name="packagesToScan" value="be.fabrice.comparehql" />
+ 	   <property name="packagesToScan" value="be.fabrice.fetch.eager" />
     </bean>
     
     <tx:annotation-driven transaction-manager="transactionManager" />
