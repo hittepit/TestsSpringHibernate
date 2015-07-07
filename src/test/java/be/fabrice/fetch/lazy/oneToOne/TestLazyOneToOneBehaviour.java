@@ -6,6 +6,8 @@ import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -55,8 +57,12 @@ public class TestLazyOneToOneBehaviour extends TransactionalTestBase{
 		assertThat(Hibernate.isInitialized(slave.getMaster())).isTrue();
 		
 		assertThat(SimpleSql.getSqlList()).hasSize(2);
-		//Alors que la première requête récupère le BadSlave, la deuxième le récupère à nouveau
+		//Alors que la première requête récupère le BadSlave, la deuxième qui 
+		//récupère le master, récupère encore le slave parce qu'il est eager
 		assertThat(SimpleSql.contains("select .* from BMS .* join BSL .*")).isTrue();
+		
+		//Par contre, si le fetch eager se faisait avec un select, ce select ne serait pas fait
+		//@Fetch(FetchMode.SELECT)
 	}
 	
 	@Test
