@@ -119,9 +119,9 @@ public class TestHqlProjectionIssue extends TransactionalTestBase{
 			.setParameterList("names", names)
 			.list();
 		
-		assertThat(travs).hasSize(1);
+		assertThat(travs).isEmpty(); //La requête générée ne permet pas de retrouver le travailleur
 		
-		//Cependant...
+		//Parce que...
 		List<String> sqlsWithTravailleur = extractSqlContaining(SimpleSql.getSqlList(), "travailleu");
 		int nombreAliases = extractAliases(sqlsWithTravailleur.get(0), "travailleu").size();
 		

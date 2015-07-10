@@ -3,14 +3,15 @@ package be.fabrice.comparehql.appi;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
 
 import be.fabrice.utils.TransactionalTestBase;
 
 @ContextConfiguration(locations="classpath:comparehql/appi/test-spring.xml")
-public class TestHqProjectionIssueInAppi extends TransactionalTestBase {
-	@Test
+public class TestHqlProjectionIssueInAppi extends TransactionalTestBase {
+	@Test(expectedExceptions=GenericJDBCException.class)
 	public void orderby(){
 		StringBuilder sb = new StringBuilder("SELECT distinct cont.categorie FROM Contrat as cont")
         .append(" WHERE cont.travailleur.relevePrestation.numeroDossier = :dossierId")
