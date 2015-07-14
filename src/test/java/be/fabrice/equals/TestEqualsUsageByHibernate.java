@@ -21,11 +21,19 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 
 	@BeforeMethod
 	public void initData(){
-		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY"),
+		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET"),
+				insertInto("MASTERLIST")
+					.columns("ID","NAME")
+					.values(200,"ML1")
+					.build(),
+				insertInto("MASTERSET")
+					.columns("ID","NAME")
+					.values(200,"MS1")
+					.build(),
 				insertInto("SIMPLEENTITY")
-					.columns("ID","NAME","VALUE")
-					.values(1000,"Entity1000", 1)
-					.values(1001,"Entity1001", 2)
+					.columns("ID","NAME","VALUE","ML_FK","MS_FK")
+					.values(1000,"Entity1000", 1, 200, 200)
+					.values(1001,"Entity1001", 2, 200, 200)
 					.build(),
 				insertInto("MASTEREAGER")
 					.columns("ID","NAME","S_IK")
@@ -129,15 +137,41 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		
 		assertThat(Hibernate.isInitialized(me.getSimpleEntity())).isFalse(); //Lazy
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
-		assertThat(EqualsCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(EqualsCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 
 		Hibernate.initialize(me.getSimpleEntity());
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
-		assertThat(EqualsCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+		assertThat(EqualsCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 	}
 	
 	//pas utilisé pour le chargement une relation de type liste
+	@Test
+	public void notUsedByGetOnList(){
+		MasterList ml = (MasterList) getSession().get(MasterList.class,200);
+		assertThat(Hibernate.isInitialized(ml.getSimpleEntities())).isFalse(); //Lazy
+		
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(EqualsCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+
+		Hibernate.initialize(ml.getSimpleEntities());
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+		assertThat(EqualsCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+	}
+	
 	//Utilisé pour le chargement d'une relation de type set, mais pas à cause d'Hibernate
+	@Test
+	public void usedBySetButNotBecauseOfHibernate(){
+		MasterSet ms = (MasterSet) getSession().get(MasterSet.class,200);
+		assertThat(Hibernate.isInitialized(ms.getSimpleEntities())).isFalse(); //Lazy
+		
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(EqualsCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+
+		Hibernate.initialize(ms.getSimpleEntities());
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+		assertThat(EqualsCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+	}
+	
 	//Utilisé par hibernate sur une clé multiple pour un get
 	//Utilisé par hibernate sur une clé multiple pour un find
 	//Eventuellement utilisé indirectement par HIbernate dans un usertype au travers de la méthode equals pour le dirtycheking
