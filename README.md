@@ -64,6 +64,7 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 		- chargement des toOne (Proxy)
 	+ Comparaison de requêtes
 		+ Les requêtes HQL avec ou sans projection, avec ou sans join, se comportent différemment.
+	+ Démonstration de la (non) utilisation du equals par Hibernate
 
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
