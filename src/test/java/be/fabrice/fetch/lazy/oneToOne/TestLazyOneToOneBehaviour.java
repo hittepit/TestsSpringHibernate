@@ -6,18 +6,16 @@ import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import be.fabrice.utils.TransactionalTestBase;
+import be.fabrice.utils.logging.SimpleSql;
+
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-
-import be.fabrice.utils.TransactionalTestBase;
-import be.fabrice.utils.logging.SimpleSql;
 
 @ContextConfiguration(locations="classpath:fetch/lazy/oneToOne/test-spring.xml")
 public class TestLazyOneToOneBehaviour extends TransactionalTestBase{
