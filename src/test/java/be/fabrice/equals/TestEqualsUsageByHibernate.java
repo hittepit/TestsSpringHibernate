@@ -21,7 +21,12 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 
 	@BeforeMethod
 	public void initData(){
-		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET"),
+		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET","IDC"),
+				insertInto("IDC")
+					.columns("key","value","name")
+					.values(1,"TEST","Test1")
+					.values(2,"TEST","Test2")
+					.build(),
 				insertInto("MASTERLIST")
 					.columns("ID","NAME")
 					.values(200,"ML1")
@@ -172,8 +177,40 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(EqualsCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 	}
 	
-	//Utilisé par hibernate sur une clé multiple pour un get
-	//Utilisé par hibernate sur une clé multiple pour un find
+	//Pas Utilisé par hibernate pour un get avec clé composite
+	@Test
+	public void notUsedByGetWithIdClass(){
+		EntityWithIdClass entity1 = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(1, "TEST"));
+		assertThat(entity1).isNotNull();
+		EntityWithIdClass entity1Bis = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(1, "TEST"));
+		assertThat(entity1Bis).isSameAs(entity1);
+		EntityWithIdClass entity2 = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(2, "TEST"));
+		
+		assertThat(EqualsCounter.get(EntityWithIdClass.class)).isEqualTo(0);
+		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
+	}
+	
+	//Pas utilisé par hibernate sur une clé multiple pour un find
+	@Test
+	public void notUsedByFindWithIdClass(){
+		EntityWithIdClass entity1 = (EntityWithIdClass) getSession().createQuery("from EntityWithIdClass e where e.key=:key and e.value=:value")
+				.setParameter("key",1)
+				.setParameter("value","TEST")
+				.uniqueResult();
+		assertThat(entity1).isNotNull();
+		EntityWithIdClass entity1Bis = (EntityWithIdClass) getSession().createQuery("from EntityWithIdClass e where e.key=:key and e.value=:value")
+				.setParameter("key",1)
+				.setParameter("value","TEST")
+				.uniqueResult();
+		assertThat(entity1Bis).isSameAs(entity1);
+		EntityWithIdClass entity2 = (EntityWithIdClass) getSession().createQuery("from EntityWithIdClass e where e.key=:key and e.value=:value")
+				.setParameter("key",2)
+				.setParameter("value","TEST")
+				.uniqueResult();
+		
+		assertThat(EqualsCounter.get(EntityWithIdClass.class)).isEqualTo(0);
+		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
+	}
 	//Eventuellement utilisé indirectement par HIbernate dans un usertype au travers de la méthode equals pour le dirtycheking
 	//démo d'un mauvais equals portant sur un id et mis dans un set
 }
