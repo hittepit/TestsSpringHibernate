@@ -53,6 +53,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operations);
 		dbSetup.launch();
 		EqualsCounter.reinit();
+		HashcodeCounter.reinit();
 	}
 	
 	//Pas utilisé pour le dirty checking
@@ -62,6 +63,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		s.setName("test");
 		getSession().flush(); // Flush, dirty checking and save
 		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		
 		SimpleEntity s2 = (SimpleEntity) getSession()
@@ -79,6 +81,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		s.setValue(17);
 		getSession().flush(); // Flush, dirty checking and save
 		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		
 		SimpleEntity s2 = (SimpleEntity) getSession()
@@ -96,6 +99,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		SimpleEntity s1 = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
 		SimpleEntity s2 = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
 
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(s1).isSameAs(s2);
 	}
@@ -110,6 +114,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				.setParameter("name", "Entity1000")
 				.uniqueResult();
 
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(s1).isSameAs(s2);
 	}
@@ -120,17 +125,23 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		MasterEager me = (MasterEager) getSession().get(MasterEager.class, 100);
 		
 		assertThat(Hibernate.isInitialized(me.getSimpleEntity())).isTrue(); //Eager
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(HashcodeCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		
 		me.setName("other");
 		getSession().flush();
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
+		assertThat(HashcodeCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 		assertThat(EqualsCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 		
 		SimpleEntity simpleEntity = (SimpleEntity) getSession().get(SimpleEntity.class,1001);
 		me.setSimpleEntity(simpleEntity);
 		getSession().flush();
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
+		assertThat(HashcodeCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 		assertThat(EqualsCounter.get(MasterEager.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un dirty checking
 	}
@@ -141,10 +152,14 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		MasterLazy me = (MasterLazy) getSession().get(MasterLazy.class, 100);
 		
 		assertThat(Hibernate.isInitialized(me.getSimpleEntity())).isFalse(); //Lazy
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(HashcodeCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 
 		Hibernate.initialize(me.getSimpleEntity());
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+		assertThat(HashcodeCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 	}
@@ -155,24 +170,33 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		MasterList ml = (MasterList) getSession().get(MasterList.class,200);
 		assertThat(Hibernate.isInitialized(ml.getSimpleEntities())).isFalse(); //Lazy
 		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(HashcodeCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 
 		Hibernate.initialize(ml.getSimpleEntities());
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+		assertThat(HashcodeCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 	}
 	
-	//Utilisé pour le chargement d'une relation de type set, mais pas à cause d'Hibernate
+	//Hashcode Utilisé pour le chargement d'une relation de type set, mais pas à cause d'Hibernate
 	@Test
 	public void usedBySetButNotBecauseOfHibernate(){
 		MasterSet ms = (MasterSet) getSession().get(MasterSet.class,200);
 		assertThat(Hibernate.isInitialized(ms.getSimpleEntities())).isFalse(); //Lazy
 		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(HashcodeCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(EqualsCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 
 		Hibernate.initialize(ms.getSimpleEntities());
+		assertThat(ms.getSimpleEntities()).hasSize(2);
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isGreaterThan(0); //Utilisation de hashcode lors de l'initialisation, par le set
+		assertThat(HashcodeCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(MasterSet.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 	}
@@ -186,6 +210,8 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(entity1Bis).isSameAs(entity1);
 		EntityWithIdClass entity2 = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(2, "TEST"));
 		
+		assertThat(HashcodeCounter.get(EntityWithIdClass.class)).isEqualTo(0);
+		assertThat(HashcodeCounter.get(IdPk.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(EntityWithIdClass.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
 	}
@@ -208,9 +234,12 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				.setParameter("value","TEST")
 				.uniqueResult();
 		
+		assertThat(HashcodeCounter.get(EntityWithIdClass.class)).isEqualTo(0);
+		assertThat(HashcodeCounter.get(IdPk.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(EntityWithIdClass.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
 	}
+	//Embedded id
 	//Eventuellement utilisé indirectement par HIbernate dans un usertype au travers de la méthode equals pour le dirtycheking
 	//démo d'un mauvais equals portant sur un id et mis dans un set
 }
