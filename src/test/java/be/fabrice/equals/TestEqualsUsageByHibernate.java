@@ -21,8 +21,13 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 
 	@BeforeMethod
 	public void initData(){
-		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET","IDC"),
+		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET","IDC","EID"),
 				insertInto("IDC")
+					.columns("key","value","name")
+					.values(1,"TEST","Test1")
+					.values(2,"TEST","Test2")
+					.build(),
+					insertInto("EID")
 					.columns("key","value","name")
 					.values(1,"TEST","Test1")
 					.values(2,"TEST","Test2")
@@ -240,6 +245,19 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
 	}
 	//Embedded id
+	@Test
+	public void notUsedByGetWithEmbeddedId(){
+		EntityWithEmbeddedId entity1 = (EntityWithEmbeddedId) getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(1, "TEST"));
+		assertThat(entity1).isNotNull();
+		EntityWithEmbeddedId entity1Bis = (EntityWithEmbeddedId) getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(1, "TEST"));
+		assertThat(entity1Bis).isSameAs(entity1);
+		EntityWithEmbeddedId entity2 = (EntityWithEmbeddedId) getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(2, "TEST"));
+		
+		assertThat(HashcodeCounter.get(EntityWithEmbeddedId.class)).isEqualTo(0);
+		assertThat(HashcodeCounter.get(EmbeddedId.class)).isEqualTo(0);
+		assertThat(EqualsCounter.get(EntityWithEmbeddedId.class)).isEqualTo(0);
+		assertThat(EqualsCounter.get(EmbeddedId.class)).isEqualTo(0);
+	}
 	//Eventuellement utilisé indirectement par HIbernate dans un usertype au travers de la méthode equals pour le dirtycheking
 	//démo d'un mauvais equals portant sur un id et mis dans un set
 }
