@@ -21,7 +21,11 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 
 	@BeforeMethod
 	public void initData(){
-		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY","SIMPLEENTITY","MASTERLIST","MASTERSET","IDC","EID"),
+		Operation operations = sequenceOf(deleteAllFrom("MASTEREAGER","MASTERLAZY",
+				"SIMPLEMASTER","SIMPLEENTITY",
+				"MASTERLIST","MASTERSET",
+				"IDC","EID",
+				"BOOK1","BOOK2"),
 				insertInto("IDC")
 					.columns("key","value","name")
 					.values(1,"TEST","Test1")
@@ -45,6 +49,10 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 					.values(1000,"Entity1000", 1, 200, 200)
 					.values(1001,"Entity1001", 2, 200, 200)
 					.build(),
+				insertInto("SIMPLEMASTER")
+					.columns("ID","NAME","S_FK")
+					.values(2000,"Master2000",1000)
+					.build(),
 				insertInto("MASTEREAGER")
 					.columns("ID","NAME","S_IK")
 					.values(100,"ME1",1000)
@@ -52,6 +60,14 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				insertInto("MASTERLAZY")
 					.columns("ID","NAME","S_IK")
 					.values(100,"ME1",1000)
+					.build(),
+				insertInto("BOOK1")
+					.columns("ID","TITLE","ISBN")
+					.values(1000,"Test","123456789")
+					.build(),
+				insertInto("BOOK2")
+					.columns("ID","TITLE","ISBN")
+					.values(1000,"Test","123456789")
 					.build()
 				);
 		
@@ -108,7 +124,34 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(s1).isSameAs(s2);
 	}
+
+	//Pas utilisé pour le chargement d'une référence déjà chargée
+	@Test
+	public void equalsNotUsedForLoadingAlreadyLoadedSimpleDependencies(){
+		SimpleEntity s = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
+		SimpleMaster m = (SimpleMaster) getSession().get(SimpleMaster.class, 2000);
+		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors du chargement de la référence
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors du chargement de la référence
+		assertThat(HashcodeCounter.get(SimpleMaster.class)).isEqualTo(0); //Pas d'utilisation de equals du chargement de la référence
+		assertThat(EqualsCounter.get(SimpleMaster.class)).isEqualTo(0); //Pas d'utilisation de equals du chargement de la référence
+		assertThat(m.getSimpleEntity()).isSameAs(s); //Heureusement
+	}
 	
+	//Pas utilisé pour le chargement d'une collection de références dont une déjà chargée
+	@Test
+	public void equalsNotUsedForLoadingAlreadyLoadedCollectionDependencies(){
+		SimpleEntity s = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
+		MasterList m = (MasterList) getSession().get(MasterList.class, 200);
+		Hibernate.initialize(m.getSimpleEntities());
+		
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors du chargement de la référence
+		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors du chargement de la référence
+		assertThat(HashcodeCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals du chargement de la référence
+		assertThat(EqualsCounter.get(MasterList.class)).isEqualTo(0); //Pas d'utilisation de equals du chargement de la référence
+		SimpleEntity sbis = m.getSimpleEntities().get(m.getSimpleEntities().indexOf(s)); //Bien sûr, là le equals est utilisé
+		assertThat(sbis).isSameAs(s);
+	}
 	
 	//pas utilisé par les query (pour voir si déjà en session)
 	@Test
@@ -244,6 +287,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(EqualsCounter.get(EntityWithIdClass.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(IdPk.class)).isEqualTo(0);
 	}
+	
 	//Embedded id
 	@Test
 	public void notUsedByGetWithEmbeddedId(){
@@ -258,6 +302,40 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(EqualsCounter.get(EntityWithEmbeddedId.class)).isEqualTo(0);
 		assertThat(EqualsCounter.get(EmbeddedId.class)).isEqualTo(0);
 	}
-	//Eventuellement utilisé indirectement par HIbernate dans un usertype au travers de la méthode equals pour le dirtycheking
+	
+	//Pas utilisé dans un usertype lors du dirtycheking
+	@Test
+	public void equalsNotDirectlyUsedWithUserType(){
+		Book1 b = (Book1) getSession().get(Book1.class,1000);
+		b.setTitle("autre titre");
+		
+		getSession().flush();
+		
+		assertThat(HashcodeCounter.get(Book1.class)).isEqualTo(0); //Pas d'appel
+		assertThat(EqualsCounter.get(Book1.class)).isEqualTo(0); //Pas d'appel
+		
+		assertThat(HashcodeCounter.get(IsbnUserType1.class)).isEqualTo(0); //Pas d'appel
+		assertThat(EqualsCounter.get(IsbnUserType1.class)).isEqualTo(1); //Appel du equals du UserType
+		
+		assertThat(EqualsCounter.get(Isbn.class)).isEqualTo(0); //Pas d'appel
+	}
+	
+	//Sauf si le equals du type fait référence au equals... (mais c'est du Java, pas de l'Hibernate)
+	@Test
+	public void equalsNotDirectlyUsedWithUserTypeButMayBeUsedByUserType(){
+		Book2 b = (Book2) getSession().get(Book2.class,1000);
+		b.setTitle("autre titre");
+		
+		getSession().flush();
+		
+		assertThat(HashcodeCounter.get(Book2.class)).isEqualTo(0); //Pas d'appel
+		assertThat(EqualsCounter.get(Book2.class)).isEqualTo(0); //Pas d'appel
+		
+		assertThat(HashcodeCounter.get(IsbnUserType2.class)).isEqualTo(0); //Pas d'appel
+		assertThat(EqualsCounter.get(IsbnUserType2.class)).isEqualTo(1); //Appel du equals du UserType
+
+		assertThat(EqualsCounter.get(Isbn.class)).isEqualTo(1); //Appel du equals de Isbn parce que le IsbnUserType2 l'appelle
+	}
+	
 	//démo d'un mauvais equals portant sur un id et mis dans un set
 }
