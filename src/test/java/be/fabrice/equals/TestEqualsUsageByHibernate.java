@@ -5,6 +5,9 @@ import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.Hibernate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
@@ -25,7 +28,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				"SIMPLEMASTER","SIMPLEENTITY",
 				"MASTERLIST","MASTERSET",
 				"IDC","EID",
-				"BOOK1","BOOK2"),
+				"BOOK1","BOOK2", "POOREQUALS"),
 				insertInto("IDC")
 					.columns("key","value","name")
 					.values(1,"TEST","Test1")
@@ -84,7 +87,9 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		s.setName("test");
 		getSession().flush(); // Flush, dirty checking and save
 		
-		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
+		assertThat(HashcodeCounter.get(SimpleEntity.class))
+			.as("hashcode not called for dirty checking")
+			.isEqualTo(0);
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		
 		SimpleEntity s2 = (SimpleEntity) getSession()
@@ -102,7 +107,9 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		s.setValue(17);
 		getSession().flush(); // Flush, dirty checking and save
 		
-		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
+		assertThat(HashcodeCounter.get(SimpleEntity.class))
+			.as("hashcode not called for dirty checking")
+			.isEqualTo(0);
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals pour le dirty checking
 		
 		SimpleEntity s2 = (SimpleEntity) getSession()
@@ -120,7 +127,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		SimpleEntity s1 = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
 		SimpleEntity s2 = (SimpleEntity) getSession().get(SimpleEntity.class, 1000);
 
-		assertThat(HashcodeCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
+		assertThat(HashcodeCounter.get(SimpleEntity.class)).as("hashcode not called for a get").isEqualTo(0);
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors d'un get
 		assertThat(s1).isSameAs(s2);
 	}
@@ -338,4 +345,28 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 	}
 	
 	//démo d'un mauvais equals portant sur un id et mis dans un set
+	@Test
+	public void equalsOnIdMyCreateTroubles(){
+		PoorEquals p = new PoorEquals();
+		p.setName("test");
+		
+		Set<PoorEquals> ps = new HashSet<PoorEquals>();
+		
+		ps.add(p);
+		
+		getSession().saveOrUpdate(p); //Aïe, le hashcode vient de changer...
+		
+		PoorEquals p2 = (PoorEquals) getSession().createQuery("from PoorEquals p where p.name=:name").setParameter("name", "test").uniqueResult();
+		
+		assertThat(p2).as("entity called %s must be the same as entity called %s",p2.getName(),p.getName()).isSameAs(p); //Bien sûr et heureusement.
+		
+		//Cependant
+		assertThat(ps.contains(p)).as("la collection prétend qu'elle ne contient pas l'entité").isFalse();
+		
+		//Alors que...
+		assertThat(ps).hasSize(1);
+		for(PoorEquals p3 : ps){
+			assertThat(p3).isSameAs(p);
+		}
+	}
 }
