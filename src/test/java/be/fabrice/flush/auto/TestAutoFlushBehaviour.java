@@ -5,6 +5,9 @@ import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
+import org.hibernate.FlushMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
@@ -43,12 +46,17 @@ public class TestAutoFlushBehaviour extends TransactionalTestBase{
 	@BeforeMethod
 	public void initData(){
 		Operation operations = sequenceOf(
-				deleteAllFrom("SIMPLEENTITY","LIBELLE","IMMUTABLELIBELLE"),
+				deleteAllFrom("SIMPLEENTITY","LIBELLE","IMMUTABLELIBELLE","DOSSIER"),
 				insertInto("LIBELLE").columns("ID","LABEL").values(1,"Test").build(),
 				insertInto("IMMUTABLELIBELLE").columns("ID","LABEL").values(1,"Test").build(),
 				insertInto("SIMPLEENTITY").columns("ID","NAME")
 					.values(1,"Nom1")
 					.values(2,"Nom2")
+					.build(),
+				insertInto("DOSSIER").columns("ID","NOM","STATUT")
+					.values(1,"NOUVEAU",'N')
+					.values(2,"Prêt",'R')
+					.values(3,"Traité",'P')
 					.build()
 				);
 		
@@ -200,5 +208,72 @@ public class TestAutoFlushBehaviour extends TransactionalTestBase{
 		assertThat(mockFlushEntityListener.getInvocation()).isEqualTo(2);
 		//Ce qui lui permet de retrouver l'entité modifiée
 		assertThat(newEntity).isSameAs(simpleEntity1);
+	}
+	
+	@Test
+	public void whatIfNoAutoFlush(){
+		getSession().setFlushMode(FlushMode.COMMIT);
+		
+		List<Dossier> nouveauxDossiers = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'N').list();
+		
+		for(Dossier d:nouveauxDossiers){
+			//Evaluation des nouveaux dossiers et s'il est prêt -> R
+			d.setStatut('R');
+			getSession().saveOrUpdate(d); //Ca ne sert à rien, mais beaucoup de développeurs en sont convaincus
+		}
+		
+		List<Dossier> dossiersATraiter = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'R').list();
+
+		assertThat(dossiersATraiter).as("Il n'y en a qu'un en ready").hasSize(1);
+ 
+		
+		for(Dossier d:dossiersATraiter){
+			//Traitement du dossier -> R
+			d.setStatut('P');
+			getSession().saveOrUpdate(d); //Ca ne sert à rien, mais beaucoup de développeurs en sont convaincus
+		}
+		
+		getSession().flush();
+		
+		
+		List<Dossier> dossiersTraites = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'P').list();
+		
+		assertThat(dossiersTraites).as("Deux seulement alors que tous devraient être traités").hasSize(2);
+		
+		getSession().setFlushMode(FlushMode.AUTO);
+	}
+	
+	@Test
+	public void whatIfWithAutoFlush(){
+		List<Dossier> nouveauxDossiers = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'N').list();
+		
+		for(Dossier d:nouveauxDossiers){
+			//Evaluation des nouveaux dossiers et s'il est prêt -> R
+			d.setStatut('R');
+			getSession().save(d); //Ca ne sert à rien, mais beaucoup de développeurs en sont convaincus
+		}
+		
+		List<Dossier> dossiersATraiter = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'R').list();
+ 
+		assertThat(dossiersATraiter).as("Il y en a bien en ready").hasSize(2);
+		
+		for(Dossier d:dossiersATraiter){
+			//Traitement du dossier -> R
+			d.setStatut('P');
+			getSession().save(d); //Ca ne sert à rien, mais beaucoup de développeurs en sont convaincus
+		}
+		
+		getSession().flush();
+		
+		
+		List<Dossier> dossiersTraites = getSession().createQuery("from Dossier d where d.statut = :statut")
+				.setParameter("statut", 'P').list();
+		
+		assertThat(dossiersTraites).as("Ici, les trois ont été traités").hasSize(3);
 	}
 }
