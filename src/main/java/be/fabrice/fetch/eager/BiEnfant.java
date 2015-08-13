@@ -1,23 +1,22 @@
 package be.fabrice.fetch.eager;
 
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
 @Entity
-public class Parent {
+public class BiEnfant {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 	private String name;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	private char gender;
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="parent_fk")
-	private List<Enfant> enfants;
+	private BiParent parent;
 	
 	public Integer getId() {
 		return id;
@@ -31,10 +30,11 @@ public class Parent {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<Enfant> getEnfants() {
-		return enfants;
+	public char getGender() {
+		return gender;
 	}
-	public void setEnfants(List<Enfant> enfants) {
-		this.enfants = enfants;
+	public void setGender(char gender) {
+		this.gender = gender;
 	}
+
 }

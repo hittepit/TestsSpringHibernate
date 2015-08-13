@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -26,7 +27,7 @@ public class JoinFetchRiskyBehaviourTest extends TransactionalTestBase {
 	public void initData(){
 		getSession().clear();
 		Operation operations = sequenceOf(
-				deleteAllFrom("enfant","parent"),
+				deleteAllFrom("enfant","parent","bienfant","biparent"),
 				insertInto("parent").columns("id","name")
 					.values(1,"parent1")
 					.values(2,"parent2")
@@ -38,6 +39,15 @@ public class JoinFetchRiskyBehaviourTest extends TransactionalTestBase {
 					.values(4,"male2",'M',1)
 					.values(5,"female3",'F',2)
 					.values(6,"female4",'F',2)
+					.build(),
+				insertInto("biparent").columns("id","name")
+					.values(1,"parent1")
+					.build(),
+				insertInto("bienfant").columns("id","name","gender","parent_fk")
+					.values(1,"female1",'F',1)
+					.values(2,"female2",'F',1)
+					.values(3,"male1",'M',1)
+					.values(4,"male2",'M',1)
 					.build());
 		
 		DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operations);
@@ -131,6 +141,7 @@ public class JoinFetchRiskyBehaviourTest extends TransactionalTestBase {
 		Enfant e = new Enfant();
 		e.setName("newFemale");
 		e.setGender('F');
+		parent1.getEnfants().remove(0);
 		parent1.getEnfants().add(e);
 		
 		getSession().flush(); //Provoque la persistance
@@ -138,5 +149,50 @@ public class JoinFetchRiskyBehaviourTest extends TransactionalTestBase {
 		List<Enfant> males = getSession().createQuery("from Enfant e where e.gender = :g").setParameter("g", 'M').list();
 		
 		assertThat(males).hasSize(2); //Ouf... Ils n'ont pas été supprimés
+	}
+	
+	//Modification du parent1 avec ses filles, ajout d'un enfant, suppression des garçons?
+	@Test
+	public void testDeleteEntityWithIncorrectCollection(){
+		Parent parent1 = (Parent) getSession().createQuery("select distinct p from Parent p join fetch p.enfants as enfant where p.name=:n and enfant.gender = :g")
+				.setParameter("n","parent1")
+				.setParameter("g", 'F').uniqueResult();
+		
+		getSession().delete(parent1);
+		getSession().flush(); //Provoque la persistance
+		
+		List<Enfant> males = getSession().createQuery("from Enfant e where e.gender = :g").setParameter("g", 'M').list();
+		assertThat(males).hasSize(2); //Or, ils auraient dû être supprimés
+		
+		List<Enfant> females = getSession().createQuery("from Enfant e where e.gender = :g").setParameter("g", 'F').list();
+		assertThat(females).hasSize(2); //Puisque les filles ont été supprimées
+	}
+	
+	//Et donc, quand la relation est bidirectionnelle
+	@Test(expectedExceptions=ConstraintViolationException.class)
+	public void testDeleteBidirectionnalEntityWithPartialList(){
+		BiParent parent = (BiParent) getSession().createQuery("select distinct p from BiParent p join fetch p.enfants as enfant where p.name=:n and enfant.gender = :g")
+				.setParameter("n","parent1")
+				.setParameter("g", 'F').uniqueResult();
+		
+		assertThat(parent.getEnfants()).hasSize(2); //Que les filles
+		getSession().delete(parent); //Lance une exception car les filles sont supprimées (cascading), mais pas les garçons qui référencie toujours le parent
+		
+		getSession().flush();
+	}
+	
+	//Alors que... 
+	@Test
+	public void testDeleteBidirectionnalEntityWithCompleteList(){
+		BiParent parent = (BiParent) getSession().createQuery("select distinct p from BiParent p join fetch p.enfants as enfant where p.name=:n")
+				.setParameter("n","parent1").uniqueResult();
+		
+		assertThat(parent.getEnfants()).hasSize(4); //Les filles et les garçons
+		getSession().delete(parent);
+		getSession().flush();
+		
+		List<BiEnfant> enfants = getSession().createQuery("from BiEnfant").list();
+		assertThat(enfants).isEmpty(); //Ils ont bien été supprimés
+		assertThat(getSession().get(BiParent.class,1)).isNull();
 	}
 }
