@@ -42,6 +42,7 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 		- Cache 2nd level pour les collections
 		- Query cache
 	+ "select e from Entity e where..." ou "from Entity e where..." fetches dependencies
+	+ Problème de join fetch sur des collections filtrées -> l'objet parent contient une collection réduite d'enfants
 	+ Utilisation de lazy 
 		- type réel d'une List lazyloadée
 		- méthodes qui initialisent une collection lazy loadée
