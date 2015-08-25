@@ -28,7 +28,8 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				"SIMPLEMASTER","SIMPLEENTITY",
 				"MASTERLIST","MASTERSET",
 				"IDC","EID",
-				"BOOK1","BOOK2", "POOREQUALS"),
+				"BOOK1","BOOK2", "POOREQUALS",
+				"MASTER_SLAVE","MASTERMANY","SLAVEMANY"),
 				insertInto("IDC")
 					.columns("key","value","name")
 					.values(1,"TEST","Test1")
@@ -71,6 +72,25 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				insertInto("BOOK2")
 					.columns("ID","TITLE","ISBN")
 					.values(1000,"Test","123456789")
+					.build(),
+				insertInto("MASTERMANY")
+					.columns("ID","NAME")
+					.values(1,"master1")
+					.values(2,"master2")
+					.build(),
+				insertInto("SLAVEMANY")
+					.columns("ID","NAME")
+					.values(10,"salve10")
+					.values(20,"salve20")
+					.values(30,"salve30")
+					.values(40,"salve40")
+					.build(),
+				insertInto("MASTER_SLAVE")
+					.columns("MASTER_FK","SLAVE_FK")
+					.values(1,10)
+					.values(1,20)
+					.values(2,20)
+					.values(2,30)
 					.build()
 				);
 		
@@ -217,6 +237,48 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(HashcodeCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(SimpleEntity.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
 		assertThat(EqualsCounter.get(MasterLazy.class)).isEqualTo(0); //Pas d'utilisation de equals lors de l'initialisation
+	}
+	
+	//dirty d'une many to many
+	@Test
+	public void notUsedForManyToManyWhenAddingFreeSlave(){
+		MasterMany master = (MasterMany) getSession().get(MasterMany.class,1);
+		
+		assertThat(Hibernate.isInitialized(master.getSlaves())).isFalse();
+		SlaveMany slave = (SlaveMany) getSession().get(SlaveMany.class,40);
+		assertThat(slave).isNotNull();
+		
+		master.getSlaves().add(slave);
+		slave.getMasters().add(master);
+		
+		getSession().flush();
+		
+		//A noter que le delete sur la table de jointure est expliqué par
+		//http://assarconsulting.blogspot.be/2009/08/why-hibernate-does-delete-all-then-re.html
+		
+		assertThat(HashcodeCounter.get(MasterMany.class)).isEqualTo(0); //Pas d'utilisation de hashcode
+		assertThat(HashcodeCounter.get(SlaveMany.class)).isEqualTo(0); //Pas d'utilisation de hashcode
+		assertThat(EqualsCounter.get(MasterMany.class)).isEqualTo(0); //Pas d'utilisation de equals
+		assertThat(EqualsCounter.get(SlaveMany.class)).isEqualTo(0); //Pas d'utilisation de equals
+	}
+	
+	@Test
+	public void notUsedForManyToManyWhenAddingNotFreeSlave(){
+		MasterMany master = (MasterMany) getSession().get(MasterMany.class,1);
+		
+		assertThat(Hibernate.isInitialized(master.getSlaves())).isFalse();
+		SlaveMany slave = (SlaveMany) getSession().get(SlaveMany.class,30);
+		assertThat(slave).isNotNull();
+		
+		master.getSlaves().add(slave);
+		slave.getMasters().add(master);
+		
+		getSession().flush();
+		
+		assertThat(HashcodeCounter.get(MasterMany.class)).isEqualTo(0); //Pas d'utilisation de hashcode
+		assertThat(HashcodeCounter.get(SlaveMany.class)).isEqualTo(0); //Pas d'utilisation de hashcode
+		assertThat(EqualsCounter.get(MasterMany.class)).isEqualTo(0); //Pas d'utilisation de equals
+		assertThat(EqualsCounter.get(SlaveMany.class)).isEqualTo(0); //Pas d'utilisation de equals
 	}
 	
 	//pas utilisé pour le chargement une relation de type liste

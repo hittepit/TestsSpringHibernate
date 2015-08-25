@@ -77,6 +77,7 @@ mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/a
 	
 
 * TODO
+	- [ ] utilisation de indexcolumn, notamment pour démontrer <http://assarconsulting.blogspot.be/2009/08/why-hibernate-does-delete-all-then-re.html>
 	- [ ] proxies: hashcode (utilisation des getters)
 	- [ ] héritage, les autres stratégies
 	- [ ] Ajouter les commentaires sur les tests bidirectionnels
