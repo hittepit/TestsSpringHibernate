@@ -1,5 +1,6 @@
 package be.fabrice.oneToMany.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -51,5 +52,12 @@ public class Employeur {
 	
 	public void setTravailleurs(List<Travailleur> travailleurs) {
 		this.travailleurs = travailleurs;
+	}
+	
+	public void add(Travailleur t){
+		if(this.travailleurs == null){
+			this.travailleurs = new ArrayList<Travailleur>();
+		}
+		this.travailleurs.add(t);
 	}
 }

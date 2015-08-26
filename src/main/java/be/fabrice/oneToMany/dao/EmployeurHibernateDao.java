@@ -15,6 +15,12 @@ public class EmployeurHibernateDao extends HibernateDaoSupport implements Employ
 	public void save(Employeur employeur) {
 		getSession().saveOrUpdate(employeur);
 	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public void save(Travailleur travailleur) {
+		getSession().saveOrUpdate(travailleur);
+	}
 
 	public Employeur find(Integer id) {
 		return (Employeur)getSession().get(Employeur.class,id);

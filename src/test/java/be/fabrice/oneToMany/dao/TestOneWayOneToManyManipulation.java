@@ -1,11 +1,13 @@
 package be.fabrice.oneToMany.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,5 +76,40 @@ public class TestOneWayOneToManyManipulation extends AbstractTransactionalTestNG
 		assertNotNull(e);
 		
 		assertEquals(e.getTravailleurs().size(), 2);
+	}
+	
+	@Test
+	public void attachTheSameTravailleurToTwoEmployeur(){
+		Employeur e1 = new Employeur();
+		e1.setName("Employeur 1");
+		
+		Employeur e2 = new Employeur();
+		e2.setName("Employeur 2");
+		
+		dao.save(e1);
+		dao.save(e2);
+		
+		Travailleur t = new Travailleur();
+		t.setNom("t 1");
+		
+		e1.add(t);
+		e2.add(t);
+		
+		Session session = sessionFactory.getCurrentSession();
+				
+		session.flush();
+		
+		//A ce moment, le modèle est incohérent par rapport à la situation DB
+		//En effet...
+		
+		session.clear();
+		
+		//En réalité...
+		
+		e1 = (Employeur) session.get(Employeur.class, e1.getId());
+		e2 = (Employeur) session.get(Employeur.class, e2.getId());
+		
+		assertThat(e1.getTravailleurs()).isEmpty(); //Ne contient pas le travailleur
+		assertThat(e2.getTravailleurs()).isNotEmpty(); //Contient le travailleur
 	}
 }
