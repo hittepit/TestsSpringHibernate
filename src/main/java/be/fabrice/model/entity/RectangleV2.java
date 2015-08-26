@@ -14,6 +14,7 @@ public class RectangleV2 {
 	private double longueur;
 	private double largeur;
 	
+	@SuppressWarnings("unused")
 	private RectangleV2(){}
 	
 	public RectangleV2(double longueur, double largeur){

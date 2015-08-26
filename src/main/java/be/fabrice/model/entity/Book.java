@@ -20,6 +20,7 @@ public class Book {
 	@Column(name="AUTHOR",nullable=true)
 	private String author;
 	
+	@SuppressWarnings("unused")
 	private Book(){}
 	
 	public Book(Isbn isbn, String title, String author){

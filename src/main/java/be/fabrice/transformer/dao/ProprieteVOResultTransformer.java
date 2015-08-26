@@ -24,6 +24,7 @@ public class ProprieteVOResultTransformer implements ResultTransformer {
 		return vo;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List transformList(List collection) {
 		List<ProprieteVO> vos = (List<ProprieteVO>) collection;

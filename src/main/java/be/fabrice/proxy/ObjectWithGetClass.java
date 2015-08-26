@@ -22,6 +22,7 @@ public class ObjectWithGetClass {
 	public void setName(String value) {
 		this.name = value;
 	}
+	@SuppressWarnings("unused")
 	private String getNameInPrivate(){
 		return this.name;
 	}

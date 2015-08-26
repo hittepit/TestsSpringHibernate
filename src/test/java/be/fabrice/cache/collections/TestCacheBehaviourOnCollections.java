@@ -95,7 +95,7 @@ public class TestCacheBehaviourOnCollections extends TransactionalTestBase{
 	@Test
 	public void collectionCacheIsNotHitWhenCollectionIsEager(){
 		long initialHitCount = eagerCollectionElementsCache.getHitCount();
-		Container c = (Container)getSession().get(Container.class, 1000);
+		getSession().get(Container.class, 1000);
 		assertEquals(eagerCollectionElementsCache.getHitCount(), initialHitCount);
 	}
 }

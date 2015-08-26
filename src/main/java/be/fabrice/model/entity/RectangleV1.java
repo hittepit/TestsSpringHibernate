@@ -13,6 +13,7 @@ public class RectangleV1 {
 	private double longueur;
 	private double largeur;
 	
+	@SuppressWarnings("unused")
 	private RectangleV1(){}
 	
 	public RectangleV1(double longueur, double largeur){

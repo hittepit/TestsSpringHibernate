@@ -13,21 +13,13 @@ import static org.testng.Assert.fail;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.sql.DataSource;
-
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import be.fabrice.fetch.batch.TestBatchBehaviour;
-import be.fabrice.optimistic.Boss;
-import be.fabrice.optimistic.Employee;
 import be.fabrice.utils.TransactionalTestBase;
 
 import com.ninja_squad.dbsetup.DbSetup;

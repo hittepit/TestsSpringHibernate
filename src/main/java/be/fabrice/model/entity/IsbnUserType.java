@@ -16,6 +16,7 @@ public class IsbnUserType implements UserType {
 		return new int[]{Types.VARCHAR};
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Class returnedClass() {
 		return Isbn.class;

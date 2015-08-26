@@ -14,6 +14,7 @@ public class RectangleV4 {
 	private double dimension1;
 	private double dimension2;
 	
+	@SuppressWarnings("unused")
 	private RectangleV4(){}
 	
 	public RectangleV4(double dimension1, double dimension2){

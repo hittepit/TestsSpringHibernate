@@ -325,7 +325,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(entity1).isNotNull();
 		EntityWithIdClass entity1Bis = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(1, "TEST"));
 		assertThat(entity1Bis).isSameAs(entity1);
-		EntityWithIdClass entity2 = (EntityWithIdClass) getSession().get(EntityWithIdClass.class, new IdPk(2, "TEST"));
+		getSession().get(EntityWithIdClass.class, new IdPk(2, "TEST"));
 		
 		assertThat(HashcodeCounter.get(EntityWithIdClass.class)).isEqualTo(0);
 		assertThat(HashcodeCounter.get(IdPk.class)).isEqualTo(0);
@@ -346,7 +346,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 				.setParameter("value","TEST")
 				.uniqueResult();
 		assertThat(entity1Bis).isSameAs(entity1);
-		EntityWithIdClass entity2 = (EntityWithIdClass) getSession().createQuery("from EntityWithIdClass e where e.key=:key and e.value=:value")
+		getSession().createQuery("from EntityWithIdClass e where e.key=:key and e.value=:value")
 				.setParameter("key",2)
 				.setParameter("value","TEST")
 				.uniqueResult();
@@ -364,7 +364,7 @@ public class TestEqualsUsageByHibernate extends TransactionalTestBase{
 		assertThat(entity1).isNotNull();
 		EntityWithEmbeddedId entity1Bis = (EntityWithEmbeddedId) getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(1, "TEST"));
 		assertThat(entity1Bis).isSameAs(entity1);
-		EntityWithEmbeddedId entity2 = (EntityWithEmbeddedId) getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(2, "TEST"));
+		getSession().get(EntityWithEmbeddedId.class, new EmbeddedId(2, "TEST"));
 		
 		assertThat(HashcodeCounter.get(EntityWithEmbeddedId.class)).isEqualTo(0);
 		assertThat(HashcodeCounter.get(EmbeddedId.class)).isEqualTo(0);

@@ -14,6 +14,7 @@ public class RectangleV3 {
 	private double longueur;
 	private double largeur;
 	
+	@SuppressWarnings("unused")
 	private RectangleV3(){}
 	
 	public RectangleV3(double longueur, double largeur){
@@ -38,6 +39,7 @@ public class RectangleV3 {
 	public double getLongueur() {
 		return longueur;
 	}
+	@SuppressWarnings("unused")
 	private void setLongueur(double longueur) {
 		if(longueur<=0.0){
 			throw new IllegalArgumentException("La longueur doit être strictement positive");
@@ -48,6 +50,7 @@ public class RectangleV3 {
 	public double getLargeur() {
 		return largeur;
 	}
+	@SuppressWarnings("unused")
 	private void setLargeur(double largeur) {
 		if(largeur<=0.0){
 			throw new IllegalArgumentException("La largeur doit être strictement positive");
