@@ -32,4 +32,32 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 	public List<Item> findAll(){
 		return getSession().createCriteria(Item.class).list();
 	}
+	
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void requiredWithException(){
+		throw new RuntimeException("Cause rollback");
+	}
+	
+	@Override
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public void requiresNewWithException(){
+		throw new RuntimeException("Cause rollback");
+	}
+	
+	@Override
+	@Transactional(propagation=Propagation.NESTED)
+	public void nestedWithException(){
+		throw new RuntimeException("Cause rollback");
+	}
+	
+	@Override
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public void notSupportedWithException(){
+		throw new RuntimeException("Cause rollback");
+	}
+	
+	public void nonTransactionException(){
+		throw new RuntimeException("Cause rollback");
+	}
 }
