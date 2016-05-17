@@ -1,4 +1,4 @@
-package be.fabrice.refresh;
+package be.fabrice.refreshAndMerge;
 
 import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
 import static com.ninja_squad.dbsetup.Operations.insertInto;
@@ -17,6 +17,7 @@ import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 
+import be.fabrice.refresh.Entity1;
 import be.fabrice.utils.TransactionalTestBase;
 
 @Test(suiteName="Fonctionnement du refresh", testName="Tests sur refresh")
