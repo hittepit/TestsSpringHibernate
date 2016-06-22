@@ -1,0 +1,15 @@
+<!DOCTYPE dataset SYSTEM "dataset.dtd">
+<dataset>
+    <table name="CATEGORY">
+        <column>CODE</column>
+        <column>DESCRIPTION</column>
+        <row>
+            <value>SF</value>
+            <value>Science-fiction</value>
+        </row>
+        <row>
+        	<value>HU</value>
+            <value>Humour</value>
+        </row>
+    </table>
+</dataset>
