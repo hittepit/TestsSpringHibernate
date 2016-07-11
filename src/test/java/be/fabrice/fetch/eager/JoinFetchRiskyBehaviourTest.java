@@ -91,7 +91,7 @@ public class JoinFetchRiskyBehaviourTest extends TransactionalTestBase {
 		assertThat(parents).hasSize(2);
 	}
 	
-	//En effet, l'ffet du fetch, c'est la récupération du parent 1 avec uniquement ses filles (critère sur filles)
+	//En effet, l'effet du fetch, c'est la récupération du parent 1 avec uniquement ses filles (critère sur filles)
 	@Test
 	public void findParentWithGirlsWithFetchIsWierd(){
 		List<Parent> parents = getSession().createQuery("select distinct p from Parent p join fetch p.enfants as enfant where enfant.gender = :g").setParameter("g", 'F').list();

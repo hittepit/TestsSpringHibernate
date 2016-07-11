@@ -66,7 +66,8 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 	+ Comparaison de requêtes
 		+ Les requêtes HQL avec ou sans projection, avec ou sans join, se comportent différemment.
 	+ Démonstration de la (non) utilisation du equals par Hibernate
-
+	+ fetch specific objects in collections: reviewer - reviews. Retrouver les reviewer avec les projets où ils ont plus de 10 commentaires.
+	
 * Démonstration d'un curieux problème lorsque le critéria n'est pas tout à fait correct. Il fonctionne pour un list,
 mais ne fonctionne pas si on lui ajoute une projection rowCount (voir criteria/alias)
 
