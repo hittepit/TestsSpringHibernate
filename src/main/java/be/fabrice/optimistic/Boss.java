@@ -57,6 +57,10 @@ public class Boss {
 		return version;
 	}
 	
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+	
 	public void add(Employee employee){
 		if(this.employees == null){
 			this.employees = new ArrayList<Employee>();
