@@ -2,6 +2,7 @@ package be.fabrice.flush.dao;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -116,6 +117,24 @@ public class TestFlush extends AbstractTransactionalTestNGSpringContextTests{
 		assertEquals(persons.size(),1,"Entity has been inserted");
 		
 		sessionFactory.getCurrentSession().flush(); //Flush dirty entities
+	}
+	
+	@Test
+	public void testDeleteDoesNotFireFlush(){
+		Person p = (Person) sessionFactory.getCurrentSession().get(Person.class, 1000);
+		
+		sessionFactory.getCurrentSession().delete(p);
+		
+		assertEquals(mockSessionFlushListener.getInvocation(),0,"No flush was fired");
+		assertEquals(mockFlushEntityListener.getInvocation(),0,"No Specific Flush either");
+		
+		List<Person> persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
+		assertEquals(persons.size(), 1, "L'entité n'a pas été supprimée");
+		
+		sessionFactory.getCurrentSession().flush(); //Exécute le delete
+		
+		persons = jdbcTemplate.query("select * from PERSON where ID=?",new PersonRowMapper(),p.getId());
+		assertTrue(persons.isEmpty(), "L'entité a été supprimée lors du flush");
 	}
 	
 	/**
