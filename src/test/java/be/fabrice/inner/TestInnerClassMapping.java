@@ -3,7 +3,10 @@ package be.fabrice.inner;
 import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
 import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotSame;
+import static org.testng.Assert.assertTrue;
 
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
@@ -21,7 +24,15 @@ public class TestInnerClassMapping  extends TransactionalTestBase{
 	@BeforeMethod
 	public void initData(){
 		Operation operations = sequenceOf(
-				deleteAllFrom("PERSONNE"),
+				deleteAllFrom("PERSONNE","SITUATION2","PERSONNE2"),
+				insertInto("PERSONNE2").columns("ID","NOM")
+					.values(1000,"Toto")
+					.values(1001,"Tutu")
+					.build(),
+				insertInto("SITUATION2").columns("ID","nbEnfants","marie", "personne_fk")
+					.values(2000,0,false,1000)
+					.values(2001,2, true,1001)
+					.build(),
 				insertInto("PERSONNE").columns("ID","NOM","nbEnfants","marie")
 					.values(1000,"Toto",0,false)
 					.values(1001,"Tutu",2, true)
@@ -33,8 +44,50 @@ public class TestInnerClassMapping  extends TransactionalTestBase{
 	}
 
 	@Test
-	public void testFind(){
+	public void testFindProtectedClass(){
 		Personne p = (Personne) getSession().get(Personne.class, 1000);
-		assertNotNull(p);
+		assertFalse(p.getSituation().isMarie());
+		
+		p = (Personne) getSession().get(Personne.class, 1001);
+		assertTrue(p.getSituation().isMarie());
+	}
+
+	@Test
+	public void testUpdateProtectedClass(){
+		Personne p = (Personne) getSession().get(Personne.class, 1000);
+		p.setNbEnfants(3);
+		
+		getSession().flush();
+		getSession().clear();
+		
+		Personne p2 = (Personne) getSession().get(Personne.class, 1000);
+		
+		assertNotSame(p, p2, "Avec un clear, c'est normal");
+		
+		assertEquals(p2.getSituation().getNbEnfants(), 3);
+	}
+
+	@Test
+	public void testFindInnerClass(){
+		Personne2 p = (Personne2) getSession().get(Personne2.class, 1000);
+		assertFalse(p.getSituation().isMarie());
+		
+		p = (Personne2) getSession().get(Personne2.class, 1001);
+		assertTrue(p.getSituation().isMarie());
+	}
+
+	@Test
+	public void testUpdateInnerClass(){
+		Personne2 p = (Personne2) getSession().get(Personne2.class, 1000);
+		p.setNbEnfants(3);
+		
+		getSession().flush();
+		getSession().clear();
+		
+		Personne2 p2 = (Personne2) getSession().get(Personne2.class, 1000);
+		
+		assertNotSame(p, p2, "Avec un clear, c'est normal");
+		
+		assertEquals(p2.getSituation().getNbEnfants(), 3);
 	}
 }
