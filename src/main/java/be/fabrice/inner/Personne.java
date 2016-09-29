@@ -13,7 +13,8 @@ class Situation{
 	private boolean marie;
 	
 	/**
-	 * 
+	 * Construteur protected car on ne veut pas le construire depuis l'extérieur. L'idéal serait
+	 * private, mais Hibernate ne l'accepte pas dans ce cas.
 	 */
 	protected Situation() {}
 	
