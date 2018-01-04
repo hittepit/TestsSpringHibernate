@@ -5,7 +5,10 @@ import static com.ninja_squad.dbsetup.Operations.insertInto;
 import static com.ninja_squad.dbsetup.Operations.sequenceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -117,4 +120,16 @@ public class TestElementCollectionBehaviour extends TransactionalTestBase{
 		assertThat(t.getOrderedLabels().get(0)).isEqualTo("label1");
 	}
 	
+	@Test(description="find task containing one specific label")
+	public void find_task_containing_one_label(){
+		List<Task> tasks = 
+//				getSession().createCriteria(Task.class)
+//			.createAlias("orderedLabels", "l")
+//			.add(Restrictions.eq("l.elements", "label1"))
+//			.list();
+//		
+		getSession().createQuery("from Task t where :l in t.orderedLabels.elements").setParameter("l", "label1").list();
+		
+		assertThat(tasks).hasSize(1);
+	}
 }
