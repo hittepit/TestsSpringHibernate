@@ -1,5 +1,6 @@
 package be.fabrice.inheritance.single.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -102,5 +103,12 @@ public class TestInheritanceSingleTable extends AbstractTransactionalTestNGSprin
 				assertTrue(e instanceof Boss);
 			}
 		}
+	}
+	
+	@Test(description="On peut faire une requête sur la classe parent avec des paramètres qui n'existent que sur la classe enfant")
+	public void test_query_can_access_attribute_from_child_class_when_querying_parent(){
+		List<Employeur> employeurs = dao.findEmployeurByBossName("Trois");
+		assertThat(employeurs).hasSize(1);
+		assertThat(employeurs.get(0)).isInstanceOf(Boss.class);
 	}
 }

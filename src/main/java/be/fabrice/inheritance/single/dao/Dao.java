@@ -13,4 +13,5 @@ public interface Dao {
 	List<Boss> findAllBosses();
 	List<Societe> findAllSocietes();
 	List<Employeur> findAllEmployeurs();
+	List<Employeur> findEmployeurByBossName(String name);
 }
