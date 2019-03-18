@@ -10,7 +10,6 @@ import be.fabrice.fetch.lazy.oneToOne.BadSlave;
 
 public class GenerateSchema {
 	public static void main(String[] args) {
-		//hibernate.dialect=org.hibernate.dialect.H2Dialect
 		Properties extraProperties = new Properties();
 		extraProperties.put("hibernate.dialect","org.hibernate.dialect.H2Dialect");
 		AnnotationConfiguration cfg = new AnnotationConfiguration().addProperties(extraProperties);
