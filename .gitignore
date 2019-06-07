@@ -9,5 +9,5 @@ test-output/
 /bin/
 
 #IntelliJ
-.idea
+.idea/
 *.iml
