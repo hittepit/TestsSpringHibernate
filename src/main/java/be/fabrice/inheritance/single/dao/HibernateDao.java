@@ -38,4 +38,9 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 	public List<Employeur> findAllEmployeurs() {
 		return getSession().createQuery("from Employeur").list();
 	}
+	
+	public List<Employeur> findEmployeurByBossName(String name){
+		return getSession().createQuery("from Employeur e where e.name=:name")
+				.setParameter("name", name).list();
+	}
 }

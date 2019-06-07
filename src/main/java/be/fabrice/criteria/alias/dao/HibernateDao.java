@@ -40,8 +40,8 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 
 	private Criteria createCorrectCriteria(Long societeId){
 		Criteria criteria = getSession().createCriteria(Employe.class);
-		criteria.createAlias("patron", "pat");
-		criteria.createAlias("pat.societe","soc");
+		criteria.createCriteria("patron", "pat");
+		criteria.createCriteria("pat.societe","soc");
 		criteria.add(Restrictions.eq("soc.id", societeId));
 		return criteria;
 	}

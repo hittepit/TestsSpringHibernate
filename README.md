@@ -57,6 +57,7 @@ De plus, Hibernate est ici lié à Spring qui s'occupe de la gestion des transac
 	+ démonstration de la validation des propriétés
 		- sans hibernate-validator, validation minimale au niveau d'Hibernate
 	+ requêtes complexes
+		- criteria sur requête historisée
 	+ Test d'un intercepteur
 	+ Démonstration de l'initilisation lazy de propriétés associées à une entité
 	+ Utilisation des propriétés lazy loadées et des listeners pour ajouter de la traçabilité
