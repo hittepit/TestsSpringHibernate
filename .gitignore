@@ -7,3 +7,7 @@
 target/
 test-output/
 /bin/
+
+#IntelliJ
+.idea/
+*.iml
