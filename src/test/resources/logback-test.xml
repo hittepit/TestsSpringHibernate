@@ -18,7 +18,7 @@
 	<logger name="org.apache.commons.dbcp" level="DEBUG" />
 <logger name="org.springframework.aop.framework.JdkDynamicAopProxy" level="debug"></logger>
   <root>
-	<level value="ERROR" />
+	<level value="DEBUG" />
 	<appender-ref ref="STDOUT" />
   </root>
 </configuration>
