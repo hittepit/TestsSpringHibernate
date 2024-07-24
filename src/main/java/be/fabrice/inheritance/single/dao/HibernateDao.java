@@ -2,6 +2,7 @@ package be.fabrice.inheritance.single.dao;
 
 import java.util.List;
 
+import be.fabrice.inheritance.single.entity.Independant;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
@@ -59,6 +60,11 @@ public class HibernateDao extends HibernateDaoSupport implements Dao {
 	@Override
 	public List<Boss> findBosses() {
 		return getSession().createQuery("from Boss b").list();
+	}
+
+	@Override
+	public List<Independant> findIndependants() {
+		return getSession().createQuery("from Independant i").list();
 	}
 
 	@Override

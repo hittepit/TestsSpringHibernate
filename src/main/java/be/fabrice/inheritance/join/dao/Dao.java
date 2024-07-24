@@ -5,6 +5,7 @@ import java.util.List;
 import be.fabrice.inheritance.join.entity.Boss;
 import be.fabrice.inheritance.join.entity.Employeur;
 import be.fabrice.inheritance.join.entity.EmployeurVo;
+import be.fabrice.inheritance.join.entity.Independant;
 import be.fabrice.inheritance.join.entity.Societe;
 import be.fabrice.inheritance.join.entity.Travailleur;
 
@@ -21,6 +22,8 @@ public interface Dao {
     List<Boss> findBosses();
 
 	List<Societe> findSocietes();
+
+	List<Independant> findIndependants();
 
 	void clear();
 }
