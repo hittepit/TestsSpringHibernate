@@ -2,6 +2,7 @@ package be.fabrice.inheritance.join.dao;
 
 import java.util.List;
 
+import be.fabrice.inheritance.join.entity.Societe;
 import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,28 @@ public class HibernateDao extends HibernateDaoSupport implements Dao{
 
 	public Boss findBoss(Integer id) {
 		return (Boss) getSession().get(Boss.class,id);
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void save(Employeur employeur) {
+		getSession().persist(employeur);
+	}
+
+	@Override
+	public List<Boss> findBosses() {
+		return getSession().createQuery("from Boss b").list();
+	}
+
+	@Override
+	public List<Societe> findSocietes() {
+		return getSession().createQuery("from Societe s").list();
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void clear() {
+		getSession().clear();
 	}
 
 	public EmployeurVo findEmployeurVo(Integer id){

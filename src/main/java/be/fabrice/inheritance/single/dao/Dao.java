@@ -14,4 +14,14 @@ public interface Dao {
 	List<Societe> findAllSocietes();
 	List<Employeur> findAllEmployeurs();
 	List<Employeur> findEmployeurByBossName(String name);
+
+    void save(Employeur employeur);
+
+	List<Employeur> findAll();
+
+    List<Boss> findBosses();
+
+	List<Societe> findSocietes();
+
+	void clear();
 }

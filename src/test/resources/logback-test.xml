@@ -14,10 +14,15 @@
 
 	<logger name="org.hibernate.cache" level="DEBUG">
 	</logger>
-	
+
+	<logger name="be.fabrice" level="INFO">
+	</logger>
+
 	<logger name="org.apache.commons.dbcp" level="DEBUG" />
-<logger name="org.springframework.aop.framework.JdkDynamicAopProxy" level="debug"></logger>
-  <root>
+
+	<logger name="org.springframework.aop.framework.JdkDynamicAopProxy" level="debug"></logger>
+
+	<root>
 	<level value="ERROR" />
 	<appender-ref ref="STDOUT" />
   </root>

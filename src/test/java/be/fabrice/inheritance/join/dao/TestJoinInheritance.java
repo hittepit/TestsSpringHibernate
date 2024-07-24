@@ -53,6 +53,5 @@ public class TestJoinInheritance extends AbstractTransactionalTestNGSpringContex
 	public void findBossMustReturnABoss(){
 		Boss e = dao.findBoss(1000);
 		assertNotNull(e);
-		assertTrue(e instanceof Boss);
 	}
 }

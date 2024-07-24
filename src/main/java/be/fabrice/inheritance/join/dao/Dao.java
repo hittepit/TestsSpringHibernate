@@ -5,6 +5,7 @@ import java.util.List;
 import be.fabrice.inheritance.join.entity.Boss;
 import be.fabrice.inheritance.join.entity.Employeur;
 import be.fabrice.inheritance.join.entity.EmployeurVo;
+import be.fabrice.inheritance.join.entity.Societe;
 import be.fabrice.inheritance.join.entity.Travailleur;
 
 public interface Dao {
@@ -14,4 +15,12 @@ public interface Dao {
 	EmployeurVo findEmployeurVo(Integer id);
 	List<Employeur> findAll();
 	Boss findBoss(Integer id);
+
+	void save(Employeur employeur);
+
+    List<Boss> findBosses();
+
+	List<Societe> findSocietes();
+
+	void clear();
 }

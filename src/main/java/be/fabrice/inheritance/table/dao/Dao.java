@@ -13,4 +13,12 @@ public interface Dao {
 	List<Boss> findAllBosses();
 	List<Societe> findAllSocietes();
 	List<Employeur> findAllEmployeurs();
+
+    void save(Employeur employeur);
+
+    List<Boss> findBosses();
+
+	List<Societe> findSocietes();
+
+	void clearSession();
 }
